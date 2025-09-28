@@ -71,21 +71,68 @@ class FootballAPI:
             return "Errore API"
 
 @st.cache_data(ttl=300)  # Cache per 5 minuti
-def load_data_from_drive(file_url):
-    """Carica dati da Google Drive"""
+def load_data_from_sheets():
+    """Carica dati direttamente da Google Sheets"""
     try:
-        # Converte URL di Google Drive in formato scaricabile
-        if 'drive.google.com' in file_url:
-            file_id = file_url.split('/d/')[1].split('/')[0]
-            download_url = f"https://drive.google.com/uc?export=download&id={file_id}"
+        # URL fisso del tuo Google Sheets
+        sheets_url = "https://docs.google.com/spreadsheets/d/1tC2h3ud-h1tLAnmU2tdWOFG7-lMoE-FK/edit?gid=105352643#gid=105352643"
+        
+        # Estrai ID del foglio e GID
+        if '/d/' in sheets_url:
+            file_id = sheets_url.split('/d/')[1].split('/')[0]
         else:
-            download_url = file_url
-            
-        df = pd.read_excel(download_url, skiprows=3)  # Salta le prime 3 righe con statistiche
+            st.error("URL Google Sheets non valido")
+            return None
+        
+        # Estrai GID se presente
+        gid = "105352643"  # GID del tuo foglio specifico
+        
+        # Costruisci URL per esportazione CSV
+        csv_url = f"https://docs.google.com/spreadsheets/d/{file_id}/export?format=csv&gid={gid}"
+        
+        # Headers per evitare problemi di autorizzazione
+        headers = {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+        }
+        
+        # Scarica il CSV
+        response = requests.get(csv_url, headers=headers)
+        response.raise_for_status()
+        
+        # Leggi il CSV
+        from io import StringIO
+        csv_data = StringIO(response.text)
+        df = pd.read_csv(csv_data, skiprows=3)  # Salta le prime 3 righe con statistiche
         
         # Pulizia e preparazione dati
-        df['Data predizione'] = pd.to_datetime(df['Data predizione'], format='%d/%m/%Y')
-        df['Data partita'] = pd.to_datetime(df['Data partita'], format='%d/%m/%Y')
+        # Rimuovi colonne completamente vuote
+        df = df.dropna(how='all', axis=1)
+        df = df.dropna(how='all', axis=0)
+        
+        # Converti le date con gestione errori
+        if 'Data predizione' in df.columns:
+            df['Data predizione'] = pd.to_datetime(df['Data predizione'], format='%d/%m/%Y', errors='coerce')
+        if 'Data partita' in df.columns:
+            df['Data partita'] = pd.to_datetime(df['Data partita'], format='%d/%m/%Y', errors='coerce')
+        
+        return df
+        
+    except requests.exceptions.RequestException as e:
+        st.error(f"Errore di connessione a Google Sheets: {str(e)}")
+        st.info("Assicurati che il Google Sheets sia condiviso pubblicamente (chiunque con il link può visualizzare)")
+        return None
+    except Exception as e:
+        st.error(f"Errore nel caricamento dei dati: {str(e)}")
+        return None
+
+def load_data_from_upload(uploaded_file):
+    """Carica dati da file caricato"""
+    try:
+        df = pd.read_excel(uploaded_file, skiprows=3)  # Salta le prime 3 righe con statistiche
+        
+        # Pulizia e preparazione dati
+        df['Data predizione'] = pd.to_datetime(df['Data predizione'], format='%d/%m/%Y', errors='coerce')
+        df['Data partita'] = pd.to_datetime(df['Data partita'], format='%d/%m/%Y', errors='coerce')
         
         return df
     except Exception as e:
@@ -380,22 +427,75 @@ def main():
     # Sidebar per configurazione
     st.sidebar.header("Configurazione")
     
-    # Input per URL Google Drive
-    drive_url = "https://docs.google.com/spreadsheets/d/1tC2h3ud-h1tLAnmU2tdWOFG7-lMoE-FK/edit?gid=105352643#gid=105352643"
+    # Scelta del metodo di caricamento
+    upload_method = st.sidebar.radio(
+        "Come vuoi caricare i dati?",
+        ["📊 Carica da Google Sheets", "📁 Carica File Excel"],
+        help="Il Google Sheets è già configurato e si aggiorna automaticamente"
+    )
     
-    if not drive_url:
-        st.info("👆 Inserisci l'URL del file Excel nella sidebar per iniziare")
+    df = None
+    
+    if upload_method == "📊 Carica da Google Sheets":
+        # Caricamento automatico da Google Sheets
+        st.sidebar.success("✅ Google Sheets configurato")
+        st.sidebar.info("URL: docs.google.com/.../1tC2h3ud-h1tLAnmU2tdWOFG7-lMoE-FK")
+        
+        # Pulsante per ricaricare
+        if st.sidebar.button("🔄 Ricarica Dati", help="Aggiorna i dati dal Google Sheets"):
+            st.cache_data.clear()
+        
+        with st.spinner("Caricamento dati da Google Sheets..."):
+            df = load_data_from_sheets()
+            
+        if df is not None:
+            st.sidebar.success(f"✅ Dati caricati: {len(df)} righe")
+        
+    else:  # Caricamento file Excel
+        uploaded_file = st.sidebar.file_uploader(
+            "Carica il file Excel",
+            type=['xlsx', 'xls'],
+            help="Carica un file Excel alternativo con le predizioni"
+        )
+        
+        if uploaded_file is not None:
+            with st.spinner("Caricamento file Excel..."):
+                df = load_data_from_upload(uploaded_file)
+        else:
+            st.info("👆 Carica un file Excel nella sidebar o usa Google Sheets")
+            st.markdown("""
+            ### 📊 **Google Sheets (Raccomandato)**
+            - Dati sempre aggiornati automaticamente
+            - Nessuna configurazione necessaria
+            - Accesso diretto al tuo foglio di calcolo
+            
+            ### 📁 **File Excel**
+            - Carica un file Excel dal tuo computer
+            - Utile per test o file alternativi
+            
+            ### Funzionalità App:
+            - 📊 **Statistiche**: Analisi complete delle predizioni
+            - 🎯 **Partite da Giocare**: Visualizza le prossime partite
+            - 📋 **Partite Giocate**: Cronologia delle partite disputate
+            - 🔄 **Aggiornamento Live**: Risultati in tempo reale
+            """)
+            return
+    
+    if df is None:
+        st.error("❌ Impossibile caricare i dati. Verifica la configurazione.")
         st.markdown("""
-        ### Funzionalità:
-        - 📊 **Statistiche**: Analisi complete delle predizioni
-        - 🎯 **Partite da Giocare**: Visualizza le prossime partite con risultati live
-        - 📋 **Partite Giocate**: Cronologia delle partite già disputate
+        ### 🔧 Risoluzione Problemi:
+        
+        **Se stai usando Google Sheets:**
+        - Assicurati che il foglio sia condiviso pubblicamente
+        - Verifica la connessione internet
+        - Prova a ricaricare i dati
+        
+        **Alternative:**
+        - Prova a caricare il file Excel direttamente
+        - Verifica che il formato dei dati sia corretto
         """)
         return
-    
-    # Carica dati
-    with st.spinner("Caricamento dati..."):
-        df = load_data_from_drive(drive_url)
     
     if df is None:
         return

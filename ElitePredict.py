@@ -463,11 +463,6 @@ with tab2:
     if len(upcoming_matches) > 0:
         st.markdown(f"### 🎮 {len(upcoming_matches)} Partite in Programma")
         
-        # Auto-refresh ogni 30 secondi
-        if st.button("🔄 Aggiorna Risultati Live", use_container_width=True):
-            st.cache_data.clear()
-            st.rerun()
-        
         for idx, match in upcoming_matches.iterrows():
             # Formatta la data per visualizzazione
             match_date = match['Data partita'].strftime('%d/%m/%Y') if pd.notna(match['Data partita']) else 'Data N/D'
@@ -510,3 +505,4 @@ st.markdown("""
     📱 Ottimizzato per smartphone
 </div>
 """, unsafe_allow_html=True)
+

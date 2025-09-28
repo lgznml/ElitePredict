@@ -75,7 +75,7 @@ def load_data_from_sheets():
     """Carica dati direttamente da Google Sheets"""
     try:
         # URL fisso del tuo Google Sheets
-        sheets_url = "https://docs.google.com/spreadsheets/d/1tC2h3ud-h1tLAnmU2tdWOFG7-lMoE-FK/edit?gid=105352643#gid=105352643"
+        sheets_url = "https://docs.google.com/spreadsheets/d/15sGAUABd3b-dsQ-iW8AHVclM_hSu_cD_/edit?usp=drive_web&ouid=107203930880597540844&rtpof=true"
         
         # Estrai ID del foglio e GID
         if '/d/' in sheets_url:
@@ -109,7 +109,7 @@ def load_data_from_sheets():
         df = df.dropna(how='all', axis=1)
         df = df.dropna(how='all', axis=0)
         
-        # Converti le date con gestione errori
+        # Converti le date con il formato corretto
         if 'Data predizione' in df.columns:
             df['Data predizione'] = pd.to_datetime(df['Data predizione'], format='%d/%m/%Y', errors='coerce')
         if 'Data partita' in df.columns:
@@ -276,9 +276,9 @@ def show_statistics_page(df):
 
 def show_upcoming_matches(df):
     """Pagina partite da giocare"""
-    st.header("🎯 Partite da Giocare")
+    st.header("Partite da Giocare")
     
-    # Filtra partite da giocare
+    # Filtra partite da giocare (quelle senza risultato reale)
     upcoming = df[df['Risultato secco reale'].isna()].copy()
     
     if len(upcoming) == 0:
@@ -299,7 +299,7 @@ def show_upcoming_matches(df):
                                          ["Tutti"] + list(upcoming['Confidence'].unique()))
     
     with col3:
-        if st.button("🔄 Aggiorna Risultati Live"):
+        if st.button("Aggiorna Risultati Live"):
             st.rerun()
     
     # Applica filtri
@@ -319,8 +319,8 @@ def show_upcoming_matches(df):
             with col1:
                 st.markdown(f"""
                 **{row['Squadra casa']} vs {row['Squadra ospite']}**  
-                📅 {row['Data partita'].strftime('%d/%m/%Y')} - {row['Giorno partita']}  
-                🏆 {row['Campionato']} (Giornata {row['Giornata']})
+                {row['Data partita'].strftime('%d/%m/%Y')} - {row['Giorno partita']}  
+                {row['Campionato']} (Giornata {row['Giornata']})
                 """)
             
             with col2:
@@ -449,7 +449,7 @@ def main():
             df = load_data_from_sheets()
             
         if df is not None:
-            st.sidebar.success(f"✅ Dati caricati: {len(df)} righe")
+            st.sidebar.success(f"Dati caricati: {len(df)} righe")
         
     else:  # Caricamento file Excel
         uploaded_file = st.sidebar.file_uploader(
@@ -508,9 +508,11 @@ def main():
     
     # Informazioni dataset
     st.sidebar.markdown("---")
-    st.sidebar.markdown(f"**Partite totali:** {len(df)}")
-    st.sidebar.markdown(f"**Partite giocate:** {len(df[df['Risultato secco reale'].notna()])}")
-    st.sidebar.markdown(f"**Da giocare:** {len(df[df['Risultato secco reale'].isna()])}")
+    if df is not None:
+        st.sidebar.markdown(f"**Partite totali:** {len(df)}")
+        st.sidebar.markdown(f"**Partite giocate:** {len(df[df['Risultato secco reale'].notna()])}")
+        st.sidebar.markdown(f"**Da giocare:** {len(df[df['Risultato secco reale'].isna()])}")
+        
     st.sidebar.markdown(f"**Ultimo aggiornamento:** {datetime.now().strftime('%H:%M:%S')}")
     
     # Mostra pagina selezionata

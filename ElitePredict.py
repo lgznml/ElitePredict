@@ -75,7 +75,7 @@ def load_data_from_sheets():
     """Carica dati direttamente da Google Sheets"""
     try:
         # URL fisso del tuo Google Sheets
-        sheets_url = "https://docs.google.com/spreadsheets/d/15sGAUABd3b-dsQ-iW8AHVclM_hSu_cD_/edit?usp=drive_web&ouid=107203930880597540844&rtpof=true"
+        sheets_url = "https://docs.google.com/spreadsheets/d/15sGAUABd3b-dsQ-iW8AHVclM_hSu_cD_/edit?usp=sharing&ouid=107203930880597540844&rtpof=true&sd=true"
         
         # Estrai ID del foglio e GID
         if '/d/' in sheets_url:
@@ -525,3 +525,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+

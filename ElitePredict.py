@@ -291,27 +291,44 @@ with col2:
         value=datetime.now().date(),
         min_value=min_date,
         max_value=max_date,
-        help="Filtra le partite per una data specifica"
+        help="Filtra le partite da questa data in poi"
     )
 
 with col3:
+    only_selected_date = st.checkbox(
+        "Solo questa data", 
+        value=False, 
+        help="Se selezionato mostra solo le partite di questa data, altrimenti da questa data in poi"
+    )
     show_all = st.checkbox("Mostra tutte le date", value=False, help="Ignora il filtro data e mostra tutte le partite")
 
 # Applica filtro data
 if not show_all and 'Data partita' in df.columns:
-    df_filtered = df[df['Data partita'].dt.date == selected_date].copy()
+    if only_selected_date:
+        # Mostra solo partite della data selezionata
+        df_filtered = df[df['Data partita'].dt.date == selected_date].copy()
+        filter_info = f"del {selected_date.strftime('%d/%m/%Y')}"
+    else:
+        # Mostra partite dalla data selezionata in poi
+        df_filtered = df[df['Data partita'].dt.date >= selected_date].copy()
+        filter_info = f"dal {selected_date.strftime('%d/%m/%Y')} in poi"
+    
     if len(df_filtered) == 0:
-        st.warning(f"⚠️ Nessuna partita trovata per il {selected_date.strftime('%d/%m/%Y')}")
+        st.warning(f"⚠️ Nessuna partita trovata {filter_info}")
         st.info("💡 Prova a selezionare una data diversa o attiva 'Mostra tutte le date'")
 else:
     df_filtered = df.copy()
+    filter_info = "tutte le date"
 
 # Info filtro applicato
 if not show_all:
-    st.info(f"📅 Visualizzando partite del {selected_date.strftime('%d/%m/%Y')} - {len(df_filtered)} partite trovate")
+    if only_selected_date:
+        st.info(f"📅 Visualizzando partite {filter_info} - {len(df_filtered)} partite trovate")
+    else:
+        st.info(f"📅 Visualizzando partite {filter_info} - {len(df_filtered)} partite trovate")
 else:
     st.info(f"📅 Visualizzando tutte le partite - {len(df_filtered)} partite totali")
-
+    
 st.markdown("---")
 
 # Tabs principali
@@ -544,3 +561,4 @@ st.markdown("""
 # Auto-refresh per dati live (ogni 30 secondi quando ci sono partite live)
 if len(df[(df['Risultato predizione (risultato secco)'] == 'Da giocare')]) > 0:
     time.sleep(0.1)  # Piccola pausa per evitare refresh troppo frequenti
+

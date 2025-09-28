@@ -1,529 +1,380 @@
 import streamlit as st
 import pandas as pd
-import numpy as np
 import plotly.express as px
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 import requests
 from datetime import datetime, timedelta
+import json
 import time
-from io import StringIO
-import gspread
-from google.oauth2.service_account import Credentials
 
-# Configurazione pagina
+# Configurazione pagina per mobile
 st.set_page_config(
-    page_title="Predizioni Calcistiche",
+    page_title="⚽ Predizioni Calcio",
     page_icon="⚽",
     layout="wide",
-    initial_sidebar_state="expanded"
+    initial_sidebar_state="collapsed"
 )
 
-# CSS personalizzato
+# CSS per ottimizzazione mobile
 st.markdown("""
 <style>
-    .metric-card {
+    .main > div {
+        padding-top: 2rem;
+        padding-bottom: 2rem;
+    }
+    
+    .stTabs [data-baseweb="tab-list"] {
+        gap: 8px;
+    }
+    
+    .stTabs [data-baseweb="tab"] {
+        height: 50px;
+        padding: 0px 12px;
         background-color: #f0f2f6;
-        padding: 1rem;
-        border-radius: 0.5rem;
-        border-left: 5px solid #1f77b4;
+        border-radius: 8px;
+        color: #262730;
+        font-size: 16px;
+        font-weight: 500;
     }
-    .success-metric {
-        border-left-color: #2e8b57;
+    
+    .stTabs [aria-selected="true"] {
+        background-color: #ff6b35 !important;
+        color: white !important;
     }
-    .warning-metric {
-        border-left-color: #ff6347;
+    
+    .metric-card {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        padding: 20px;
+        border-radius: 15px;
+        color: white;
+        text-align: center;
+        margin: 10px 0;
+        box-shadow: 0 8px 25px rgba(0,0,0,0.1);
     }
-    .info-metric {
-        border-left-color: #4682b4;
+    
+    .prediction-card {
+        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        padding: 20px;
+        border-radius: 15px;
+        color: white;
+        margin: 15px 0;
+        box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+    }
+    
+    .live-score {
+        background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        padding: 15px;
+        border-radius: 12px;
+        color: white;
+        text-align: center;
+        margin: 10px 0;
+        font-weight: bold;
+        box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+    }
+    
+    .status-badge {
+        display: inline-block;
+        padding: 5px 12px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: bold;
+        margin: 5px 0;
+    }
+    
+    .status-correct {
+        background-color: #28a745;
+        color: white;
+    }
+    
+    .status-incorrect {
+        background-color: #dc3545;
+        color: white;
+    }
+    
+    .status-pending {
+        background-color: #ffc107;
+        color: black;
+    }
+    
+    @media (max-width: 768px) {
+        .main .block-container {
+            padding-left: 1rem;
+            padding-right: 1rem;
+        }
+        
+        .stTabs [data-baseweb="tab"] {
+            font-size: 14px;
+            padding: 0px 8px;
+        }
     }
 </style>
 """, unsafe_allow_html=True)
 
-class FootballAPI:
-    """Classe per recuperare risultati in tempo reale"""
-    
-    @staticmethod
-    def get_live_results(team1, team2, date):
-        """
-        Recupera risultati in tempo reale (simulato per demo)
-        In produzione, utilizzare API come Football-Data.org, API-Sports, etc.
-        """
-        try:
-            # Simulazione di chiamata API
-            # In produzione sostituire con vera API
-            simulated_results = {
-                ("Milan", "Napoli"): "1-2",
-                ("Roma", "Verona"): "2-0",
-                ("Sassuolo", "Udinese"): "1-1",
-                ("Lecce", "Bologna"): "0-1",
-                ("Parma", "Torino"): "2-1",
-                ("Genoa", "Lazio"): "1-3"
-            }
-            
-            key = (team1, team2)
-            if key in simulated_results:
-                return simulated_results[key]
-            else:
-                return "Da giocare"
-                
-        except Exception as e:
-            return "Errore API"
-
+# Funzione per caricare dati (sostituisci con il tuo metodo di caricamento)
 @st.cache_data(ttl=300)  # Cache per 5 minuti
-def load_data_from_sheets():
-    """Carica dati direttamente da Google Sheets"""
-    try:
-        # URL fisso del tuo Google Sheets
-        sheets_url = "https://docs.google.com/spreadsheets/d/15sGAUABd3b-dsQ-iW8AHVclM_hSu_cD_/edit?gid=843549565#gid=843549565"
-        
-        # Estrai ID del foglio e GID
-        if '/d/' in sheets_url:
-            file_id = sheets_url.split('/d/')[1].split('/')[0]
-        else:
-            st.error("URL Google Sheets non valido")
-            return None
-        
-        # Estrai GID se presente
-        gid = "105352643"  # GID del tuo foglio specifico
-        
-        # Costruisci URL per esportazione CSV
-        csv_url = f"https://docs.google.com/spreadsheets/d/{file_id}/export?format=csv&gid={gid}"
-        
-        # Headers per evitare problemi di autorizzazione
-        headers = {
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
-        }
-        
-        # Scarica il CSV
-        response = requests.get(csv_url, headers=headers)
-        response.raise_for_status()
-        
-        # Leggi il CSV
-        from io import StringIO
-        csv_data = StringIO(response.text)
-        df = pd.read_csv(csv_data, skiprows=3)  # Salta le prime 3 righe con statistiche
-        
-        # Pulizia e preparazione dati
-        # Rimuovi colonne completamente vuote
-        df = df.dropna(how='all', axis=1)
-        df = df.dropna(how='all', axis=0)
-        
-        # Converti le date con il formato corretto
-        if 'Data predizione' in df.columns:
-            df['Data predizione'] = pd.to_datetime(df['Data predizione'], format='%d/%m/%Y', errors='coerce')
-        if 'Data partita' in df.columns:
-            df['Data partita'] = pd.to_datetime(df['Data partita'], format='%d/%m/%Y', errors='coerce')
-        
-        return df
-        
-    except requests.exceptions.RequestException as e:
-        st.error(f"Errore di connessione a Google Sheets: {str(e)}")
-        st.info("Assicurati che il Google Sheets sia condiviso pubblicamente (chiunque con il link può visualizzare)")
-        return None
-    except Exception as e:
-        st.error(f"Errore nel caricamento dei dati: {str(e)}")
-        return None
-
-def load_data_from_upload(uploaded_file):
-    """Carica dati da file caricato"""
-    try:
-        df = pd.read_excel(uploaded_file, skiprows=3)  # Salta le prime 3 righe con statistiche
-        
-        # Pulizia e preparazione dati
-        df['Data predizione'] = pd.to_datetime(df['Data predizione'], format='%d/%m/%Y', errors='coerce')
-        df['Data partita'] = pd.to_datetime(df['Data partita'], format='%d/%m/%Y', errors='coerce')
-        
-        return df
-    except Exception as e:
-        st.error(f"Errore nel caricamento del file: {str(e)}")
-        return None
-
-def calculate_statistics(df):
-    """Calcola statistiche generali"""
-    played_matches = df[df['Risultato secco reale'].notna()]
-    
-    stats = {
-        'total_matches': len(df),
-        'played_matches': len(played_matches),
-        'to_play_matches': len(df) - len(played_matches),
-        'correct_predictions': len(played_matches[played_matches['Risultato predizione (risultato secco)'] == 'Corretto']),
-        'accuracy_exact': len(played_matches[played_matches['Risultato predizione (risultato secco)'] == 'Corretto']) / len(played_matches) * 100 if len(played_matches) > 0 else 0,
-        'accuracy_double': len(played_matches[played_matches['Risultato predizione (doppia chance)'] == 'Corretto']) / len(played_matches) * 100 if len(played_matches) > 0 else 0,
-        'home_wins': len(played_matches[played_matches['Risultato secco reale'] == '1']) / len(played_matches) * 100 if len(played_matches) > 0 else 0,
-        'draws': len(played_matches[played_matches['Risultato secco reale'] == 'X']) / len(played_matches) * 100 if len(played_matches) > 0 else 0,
-        'away_wins': len(played_matches[played_matches['Risultato secco reale'] == '2']) / len(played_matches) * 100 if len(played_matches) > 0 else 0
+def load_data():
+    # Qui dovresti caricare i dati dal tuo Excel/Google Sheets
+    # Per ora uso dati di esempio
+    data = {
+        'Data predizione': ['23/8/2025', '23/8/2025', '24/8/2025', '24/8/2025', '25/8/2025'],
+        'Squadra casa': ['Manchester City', 'Bournemouth', 'Arsenal', 'Liverpool', 'Chelsea'],
+        'Squadra ospite': ['Tottenham', 'Wolves', 'Brighton', 'Crystal Palace', 'Newcastle'],
+        'Risultato secco previsto': ['1', '1', '1', '1', '1'],
+        'Risultato secco reale': ['2', '1', '', '', ''],
+        'Doppia chance prevista': ['12', '1X', '1X', '12', '1X'],
+        'Confidence': ['Alta', 'Media', 'Alta', 'Media', 'Bassa'],
+        'Risultato predizione (risultato secco)': ['Errato', 'Corretto', 'Da giocare', 'Da giocare', 'Da giocare'],
+        'Risultato predizione (doppia chance)': ['Corretto', 'Corretto', 'Da giocare', 'Da giocare', 'Da giocare'],
+        'Giornata': [2, 2, 3, 3, 3],
+        'Campionato': ['Premier League'] * 5,
+        'Data partita': ['23/8/2025', '23/8/2025', '24/8/2025', '24/8/2025', '25/8/2025']
     }
-    
-    return stats, played_matches
+    return pd.DataFrame(data)
 
-def create_accuracy_chart(df):
-    """Crea grafico accuratezza per campionato"""
-    played_matches = df[df['Risultato secco reale'].notna()]
+# Funzione per ottenere risultati live (simulata)
+@st.cache_data(ttl=60)  # Cache per 1 minuto
+def get_live_scores(home_team, away_team):
+    # Simulazione di chiamata API per risultati live
+    # In realtà dovresti usare un'API come Football-Data.org, RapidAPI, etc.
+    import random
     
-    # Accuratezza per campionato
-    league_accuracy = played_matches.groupby('Campionato').agg({
-        'Risultato predizione (risultato secco)': lambda x: (x == 'Corretto').sum() / len(x) * 100,
-        'Risultato predizione (doppia chance)': lambda x: (x == 'Corretto').sum() / len(x) * 100
-    }).reset_index()
+    # Simula risultati casuali
+    home_score = random.randint(0, 4)
+    away_score = random.randint(0, 4)
+    status = random.choice(['LIVE', 'FT', 'HT', 'SCHEDULED'])
     
-    league_accuracy.columns = ['Campionato', 'Accuratezza Risultato Secco', 'Accuratezza Doppia Chance']
-    
-    fig = px.bar(league_accuracy, 
-                 x='Campionato', 
-                 y=['Accuratezza Risultato Secco', 'Accuratezza Doppia Chance'],
-                 title='Accuratezza Predizioni per Campionato',
-                 barmode='group')
-    
-    fig.update_layout(height=400)
-    return fig
+    return {
+        'home_score': home_score,
+        'away_score': away_score,
+        'status': status,
+        'minute': random.randint(1, 90) if status == 'LIVE' else None
+    }
 
-def create_confidence_analysis(df):
-    """Analizza accuratezza per livello di confidenza"""
-    played_matches = df[df['Risultato secco reale'].notna()]
-    
-    confidence_analysis = played_matches.groupby('Confidence').agg({
-        'Risultato predizione (risultato secco)': lambda x: (x == 'Corretto').sum() / len(x) * 100
-    }).reset_index()
-    
-    confidence_analysis.columns = ['Confidence', 'Accuratezza']
-    
-    fig = px.pie(confidence_analysis, 
-                 values='Accuratezza', 
-                 names='Confidence',
-                 title='Accuratezza per Livello di Confidenza')
-    
-    return fig
+# Caricamento dati
+df = load_data()
 
-def show_statistics_page(df):
-    """Pagina delle statistiche"""
-    st.header("📊 Statistiche Predizioni")
-    
-    stats, played_matches = calculate_statistics(df)
-    
-    # Metriche principali
-    col1, col2, col3, col4 = st.columns(4)
-    
-    with col1:
-        st.markdown("""
-        <div class="metric-card info-metric">
-            <h3>Partite Totali</h3>
-            <h2>{}</h2>
-        </div>
-        """.format(stats['total_matches']), unsafe_allow_html=True)
-    
-    with col2:
-        st.markdown("""
-        <div class="metric-card success-metric">
-            <h3>Partite Giocate</h3>
-            <h2>{}</h2>
-        </div>
-        """.format(stats['played_matches']), unsafe_allow_html=True)
-    
-    with col3:
-        st.markdown("""
-        <div class="metric-card warning-metric">
-            <h3>Accuratezza Risultato Secco</h3>
-            <h2>{:.1f}%</h2>
-        </div>
-        """.format(stats['accuracy_exact']), unsafe_allow_html=True)
-    
-    with col4:
-        st.markdown("""
-        <div class="metric-card success-metric">
-            <h3>Accuratezza Doppia Chance</h3>
-            <h2>{:.1f}%</h2>
-        </div>
-        """.format(stats['accuracy_double']), unsafe_allow_html=True)
-    
-    st.markdown("---")
-    
-    # Grafici
-    col1, col2 = st.columns(2)
-    
-    with col1:
-        # Grafico accuratezza per campionato
-        fig_accuracy = create_accuracy_chart(df)
-        st.plotly_chart(fig_accuracy, use_container_width=True)
-    
-    with col2:
-        # Distribuzione risultati
-        result_dist = played_matches['Risultato secco reale'].value_counts()
-        fig_results = px.pie(values=result_dist.values, 
-                            names=['Vittoria Casa' if x=='1' else 'Pareggio' if x=='X' else 'Vittoria Ospite' for x in result_dist.index],
-                            title='Distribuzione Risultati Reali')
-        st.plotly_chart(fig_results, use_container_width=True)
-    
-    # Analisi per confidenza
-    st.subheader("Analisi per Livello di Confidenza")
-    confidence_fig = create_confidence_analysis(df)
-    st.plotly_chart(confidence_fig, use_container_width=True)
-    
-    # Tabella dettagliata per campionato
-    st.subheader("Statistiche Dettagliate per Campionato")
-    
-    league_stats = played_matches.groupby('Campionato').agg({
-        'Squadra casa': 'count',
-        'Risultato predizione (risultato secco)': lambda x: (x == 'Corretto').sum(),
-        'Risultato predizione (doppia chance)': lambda x: (x == 'Corretto').sum()
-    }).reset_index()
-    
-    league_stats.columns = ['Campionato', 'Partite Giocate', 'Predizioni Corrette (Secco)', 'Predizioni Corrette (Doppia)']
-    league_stats['Accuratezza Secco (%)'] = (league_stats['Predizioni Corrette (Secco)'] / league_stats['Partite Giocate'] * 100).round(1)
-    league_stats['Accuratezza Doppia (%)'] = (league_stats['Predizioni Corrette (Doppia)'] / league_stats['Partite Giocate'] * 100).round(1)
-    
-    st.dataframe(league_stats, use_container_width=True)
+# Header
+st.markdown("# ⚽ Dashboard Predizioni Calcio")
+st.markdown("---")
 
-def show_upcoming_matches(df):
-    """Pagina partite da giocare"""
-    st.header("Partite da Giocare")
+# Tabs principali
+tab1, tab2 = st.tabs(["📊 Statistiche", "🔴 Live Predizioni"])
+
+with tab1:
+    st.markdown("## 📈 Performance delle Predizioni")
     
-    # Filtra partite da giocare (quelle senza risultato reale)
-    upcoming = df[df['Risultato secco reale'].isna()].copy()
+    # Filtra partite terminate
+    completed_matches = df[
+        (df['Risultato predizione (risultato secco)'] != 'Da giocare') &
+        (df['Risultato predizione (doppia chance)'] != 'Da giocare')
+    ]
     
-    if len(upcoming) == 0:
-        st.info("Nessuna partita da giocare nel dataset!")
-        return
-    
-    st.subheader(f"Prossime {len(upcoming)} partite")
-    
-    # Filtri
-    col1, col2, col3 = st.columns(3)
-    
-    with col1:
-        selected_league = st.selectbox("Filtra per Campionato", 
-                                     ["Tutti"] + list(upcoming['Campionato'].unique()))
-    
-    with col2:
-        selected_confidence = st.selectbox("Filtra per Confidenza", 
-                                         ["Tutti"] + list(upcoming['Confidence'].unique()))
-    
-    with col3:
-        if st.button("Aggiorna Risultati Live"):
-            st.rerun()
-    
-    # Applica filtri
-    filtered_upcoming = upcoming.copy()
-    if selected_league != "Tutti":
-        filtered_upcoming = filtered_upcoming[filtered_upcoming['Campionato'] == selected_league]
-    if selected_confidence != "Tutti":
-        filtered_upcoming = filtered_upcoming[filtered_upcoming['Confidence'] == selected_confidence]
-    
-    # Recupera risultati live
-    api = FootballAPI()
-    
-    for idx, row in filtered_upcoming.iterrows():
-        with st.container():
-            col1, col2, col3, col4 = st.columns([3, 1, 1, 2])
+    if len(completed_matches) > 0:
+        # Metriche principali
+        col1, col2 = st.columns(2)
+        
+        with col1:
+            # Accuratezza risultato secco
+            correct_exact = len(completed_matches[completed_matches['Risultato predizione (risultato secco)'] == 'Corretto'])
+            total_exact = len(completed_matches)
+            accuracy_exact = (correct_exact / total_exact) * 100 if total_exact > 0 else 0
+            
+            st.markdown(f"""
+            <div class="metric-card">
+                <h3>🎯 Risultato Secco</h3>
+                <h2>{accuracy_exact:.1f}%</h2>
+                <p>{correct_exact}/{total_exact} predizioni corrette</p>
+            </div>
+            """, unsafe_allow_html=True)
+        
+        with col2:
+            # Accuratezza doppia chance
+            correct_double = len(completed_matches[completed_matches['Risultato predizione (doppia chance)'] == 'Corretto'])
+            accuracy_double = (correct_double / total_exact) * 100 if total_exact > 0 else 0
+            
+            st.markdown(f"""
+            <div class="metric-card">
+                <h3>🎲 Doppia Chance</h3>
+                <h2>{accuracy_double:.1f}%</h2>
+                <p>{correct_double}/{total_exact} predizioni corrette</p>
+            </div>
+            """, unsafe_allow_html=True)
+        
+        # Grafici
+        st.markdown("### 📊 Analisi Dettagliata")
+        
+        # Grafico accuratezza per confidence
+        confidence_stats = completed_matches.groupby('Confidence').agg({
+            'Risultato predizione (risultato secco)': lambda x: (x == 'Corretto').sum() / len(x) * 100,
+            'Risultato predizione (doppia chance)': lambda x: (x == 'Corretto').sum() / len(x) * 100
+        }).reset_index()
+        
+        fig = go.Figure()
+        fig.add_trace(go.Bar(
+            name='Risultato Secco',
+            x=confidence_stats['Confidence'],
+            y=confidence_stats['Risultato predizione (risultato secco)'],
+            marker_color='#ff6b35'
+        ))
+        fig.add_trace(go.Bar(
+            name='Doppia Chance',
+            x=confidence_stats['Confidence'],
+            y=confidence_stats['Risultato predizione (doppia chance)'],
+            marker_color='#4facfe'
+        ))
+        
+        fig.update_layout(
+            title='Accuratezza per Livello di Confidence',
+            xaxis_title='Livello Confidence',
+            yaxis_title='Accuratezza (%)',
+            barmode='group',
+            height=400,
+            showlegend=True
+        )
+        
+        st.plotly_chart(fig, use_container_width=True)
+        
+        # Tabella dettagli partite completate
+        st.markdown("### 📋 Dettaglio Partite Completate")
+        
+        for idx, match in completed_matches.iterrows():
+            col1, col2 = st.columns([3, 1])
             
             with col1:
                 st.markdown(f"""
-                **{row['Squadra casa']} vs {row['Squadra ospite']}**  
-                {row['Data partita'].strftime('%d/%m/%Y')} - {row['Giorno partita']}  
-                {row['Campionato']} (Giornata {row['Giornata']})
+                **{match['Squadra casa']} vs {match['Squadra ospite']}**  
+                📅 {match['Data partita']} | 🏆 {match['Campionato']}  
+                🎯 Previsto: {match['Risultato secco previsto']} | Reale: {match['Risultato secco reale']}  
+                🎲 Doppia Chance: {match['Doppia chance prevista']} | Confidence: {match['Confidence']}
                 """)
             
             with col2:
-                confidence_color = {"Alta": "🟢", "Media": "🟡", "Bassa": "🔴"}
-                st.markdown(f"""
-                **Predizione:**  
-                {row['Risultato secco previsto']}  
-                {confidence_color.get(row['Confidence'], '⚪')} {row['Confidence']}
-                """)
-            
-            with col3:
-                st.markdown(f"""
-                **Doppia Chance:**  
-                {row['Doppia chance prevista']}
-                """)
-            
-            with col4:
-                # Recupera risultato live
-                live_result = api.get_live_results(row['Squadra casa'], row['Squadra ospite'], row['Data partita'])
+                # Badge status
+                exact_status = match['Risultato predizione (risultato secco)']
+                double_status = match['Risultato predizione (doppia chance)']
                 
-                if live_result == "Da giocare":
-                    st.markdown("⏳ **Da giocare**")
-                elif live_result == "Errore API":
-                    st.markdown("❌ **Errore nel recupero**")
-                else:
-                    st.markdown(f"⚽ **Risultato Live:** {live_result}")
+                exact_class = 'status-correct' if exact_status == 'Corretto' else 'status-incorrect'
+                double_class = 'status-correct' if double_status == 'Corretto' else 'status-incorrect'
+                
+                st.markdown(f"""
+                <div class="status-badge {exact_class}">Secco: {exact_status}</div><br>
+                <div class="status-badge {double_class}">Doppia: {double_status}</div>
+                """, unsafe_allow_html=True)
             
             st.markdown("---")
-
-def show_played_matches(df):
-    """Pagina partite giocate"""
-    st.header("📋 Partite Giocate")
     
-    played_matches = df[df['Risultato secco reale'].notna()].copy()
-    
-    if len(played_matches) == 0:
-        st.info("Nessuna partita giocata nel dataset!")
-        return
-    
-    # Filtri
-    col1, col2, col3 = st.columns(3)
-    
-    with col1:
-        selected_league = st.selectbox("Campionato", 
-                                     ["Tutti"] + list(played_matches['Campionato'].unique()),
-                                     key="played_league")
-    
-    with col2:
-        result_filter = st.selectbox("Risultato Predizione", 
-                                   ["Tutti", "Corretto", "Errato"],
-                                   key="played_result")
-    
-    with col3:
-        confidence_filter = st.selectbox("Confidenza", 
-                                       ["Tutti"] + list(played_matches['Confidence'].unique()),
-                                       key="played_confidence")
-    
-    # Applica filtri
-    filtered_played = played_matches.copy()
-    if selected_league != "Tutti":
-        filtered_played = filtered_played[filtered_played['Campionato'] == selected_league]
-    if result_filter != "Tutti":
-        filtered_played = filtered_played[filtered_played['Risultato predizione (risultato secco)'] == result_filter]
-    if confidence_filter != "Tutti":
-        filtered_played = filtered_played[filtered_played['Confidence'] == confidence_filter]
-    
-    st.subheader(f"Visualizzate {len(filtered_played)} partite")
-    
-    # Visualizza partite
-    for idx, row in filtered_played.iterrows():
-        col1, col2, col3, col4 = st.columns([3, 1, 1, 1])
-        
-        with col1:
-            st.markdown(f"""
-            **{row['Squadra casa']} vs {row['Squadra ospite']}**  
-            📅 {row['Data partita'].strftime('%d/%m/%Y')}  
-            🏆 {row['Campionato']}
-            """)
-        
-        with col2:
-            pred_icon = "✅" if row['Risultato predizione (risultato secco)'] == 'Corretto' else "❌"
-            st.markdown(f"""
-            **Predetto:** {row['Risultato secco previsto']}  
-            **Reale:** {row['Risultato secco reale']}  
-            {pred_icon}
-            """)
-        
-        with col3:
-            double_icon = "✅" if row['Risultato predizione (doppia chance)'] == 'Corretto' else "❌"
-            st.markdown(f"""
-            **Doppia:** {row['Doppia chance prevista']}  
-            {double_icon}
-            """)
-        
-        with col4:
-            confidence_color = {"Alta": "🟢", "Media": "🟡", "Bassa": "🔴"}
-            st.markdown(f"{confidence_color.get(row['Confidence'], '⚪')} {row['Confidence']}")
-        
-        st.markdown("---")
-
-def main():
-    st.title("⚽ Sistema di Predizioni Calcistiche")
-    
-    # Sidebar per configurazione
-    st.sidebar.header("Configurazione")
-    
-    # Scelta del metodo di caricamento
-    upload_method = st.sidebar.radio(
-        "Come vuoi caricare i dati?",
-        ["📊 Carica da Google Sheets", "📁 Carica File Excel"],
-        help="Il Google Sheets è già configurato e si aggiorna automaticamente"
-    )
-    
-    df = None
-    
-    if upload_method == "📊 Carica da Google Sheets":
-        # Caricamento automatico da Google Sheets
-        st.sidebar.success("✅ Google Sheets configurato")
-        st.sidebar.info("URL: docs.google.com/.../1tC2h3ud-h1tLAnmU2tdWOFG7-lMoE-FK")
-        
-        # Pulsante per ricaricare
-        if st.sidebar.button("🔄 Ricarica Dati", help="Aggiorna i dati dal Google Sheets"):
-            st.cache_data.clear()
-        
-        with st.spinner("Caricamento dati da Google Sheets..."):
-            df = load_data_from_sheets()
-            
-        if df is not None:
-            st.sidebar.success(f"Dati caricati: {len(df)} righe")
-        
-    else:  # Caricamento file Excel
-        uploaded_file = st.sidebar.file_uploader(
-            "Carica il file Excel",
-            type=['xlsx', 'xls'],
-            help="Carica un file Excel alternativo con le predizioni"
-        )
-        
-        if uploaded_file is not None:
-            with st.spinner("Caricamento file Excel..."):
-                df = load_data_from_upload(uploaded_file)
-        else:
-            st.info("👆 Carica un file Excel nella sidebar o usa Google Sheets")
-            st.markdown("""
-            ### 📊 **Google Sheets (Raccomandato)**
-            - Dati sempre aggiornati automaticamente
-            - Nessuna configurazione necessaria
-            - Accesso diretto al tuo foglio di calcolo
-            
-            ### 📁 **File Excel**
-            - Carica un file Excel dal tuo computer
-            - Utile per test o file alternativi
-            
-            ### Funzionalità App:
-            - 📊 **Statistiche**: Analisi complete delle predizioni
-            - 🎯 **Partite da Giocare**: Visualizza le prossime partite
-            - 📋 **Partite Giocate**: Cronologia delle partite disputate
-            - 🔄 **Aggiornamento Live**: Risultati in tempo reale
-            """)
-            return
-    
-    if df is None:
-        st.error("❌ Impossibile caricare i dati. Verifica la configurazione.")
-        st.markdown("""
-        ### 🔧 Risoluzione Problemi:
-        
-        **Se stai usando Google Sheets:**
-        - Assicurati che il foglio sia condiviso pubblicamente
-        - Verifica la connessione internet
-        - Prova a ricaricare i dati
-        
-        **Alternative:**
-        - Prova a caricare il file Excel direttamente
-        - Verifica che il formato dei dati sia corretto
-        """)
-        return
-    
-    if df is None:
-        return
-    
-    # Menu navigazione
-    page = st.sidebar.selectbox(
-        "Naviga",
-        ["📊 Statistiche", "🎯 Partite da Giocare", "📋 Partite Giocate"]
-    )
-    
-    # Informazioni dataset
-    st.sidebar.markdown("---")
-    if df is not None:
-        st.sidebar.markdown(f"**Partite totali:** {len(df)}")
-        st.sidebar.markdown(f"**Partite giocate:** {len(df[df['Risultato secco reale'].notna()])}")
-        st.sidebar.markdown(f"**Da giocare:** {len(df[df['Risultato secco reale'].isna()])}")
-        
-    st.sidebar.markdown(f"**Ultimo aggiornamento:** {datetime.now().strftime('%H:%M:%S')}")
-    
-    # Mostra pagina selezionata
-    if page == "📊 Statistiche":
-        show_statistics_page(df)
-    elif page == "🎯 Partite da Giocare":
-        show_upcoming_matches(df)
     else:
-        show_played_matches(df)
+        st.info("📊 Nessuna partita completata ancora. Le statistiche appariranno qui una volta terminate le prime partite.")
 
-if __name__ == "__main__":
-    main()
+with tab2:
+    st.markdown("## 🔴 Predizioni Live")
+    
+    # Filtra partite da giocare
+    upcoming_matches = df[
+        (df['Risultato predizione (risultato secco)'] == 'Da giocare') |
+        (df['Risultato predizione (doppia chance)'] == 'Da giocare')
+    ]
+    
+    if len(upcoming_matches) > 0:
+        st.markdown(f"### 🎮 {len(upcoming_matches)} Partite in Programma")
+        
+        # Auto-refresh ogni 30 secondi
+        if st.button("🔄 Aggiorna Risultati Live", use_container_width=True):
+            st.cache_data.clear()
+            st.rerun()
+        
+        for idx, match in upcoming_matches.iterrows():
+            # Ottieni risultato live
+            live_data = get_live_scores(match['Squadra casa'], match['Squadra ospite'])
+            
+            st.markdown(f"""
+            <div class="prediction-card">
+                <h3>⚽ {match['Squadra casa']} vs {match['Squadra ospite']}</h3>
+                <p>📅 {match['Data partita']} | 🏆 {match['Campionato']} | Giornata {match['Giornata']}</p>
+                
+                <div style="display: flex; justify-content: space-between; margin: 15px 0;">
+                    <div>
+                        <strong>🎯 Risultato Secco Previsto:</strong> {match['Risultato secco previsto']}<br>
+                        <strong>🎲 Doppia Chance:</strong> {match['Doppia chance prevista']}<br>
+                        <strong>📊 Confidence:</strong> {match['Confidence']}
+                    </div>
+                </div>
+            </div>
+            """, unsafe_allow_html=True)
+            
+            # Risultato live
+            if live_data['status'] in ['LIVE', 'FT', 'HT']:
+                status_text = {
+                    'LIVE': f"🔴 LIVE - {live_data['minute']}'",
+                    'FT': "✅ FINITA",
+                    'HT': "⏸️ INTERVALLO"
+                }.get(live_data['status'], live_data['status'])
+                
+                st.markdown(f"""
+                <div class="live-score">
+                    <h4>{status_text}</h4>
+                    <h2>{match['Squadra casa']} {live_data['home_score']} - {live_data['away_score']} {match['Squadra ospite']}</h2>
+                </div>
+                """, unsafe_allow_html=True)
+                
+                # Analisi predizione in tempo reale
+                if live_data['status'] == 'FT':
+                    home_score = live_data['home_score']
+                    away_score = live_data['away_score']
+                    
+                    # Determina risultato reale
+                    if home_score > away_score:
+                        actual_result = '1'
+                    elif home_score < away_score:
+                        actual_result = '2'
+                    else:
+                        actual_result = 'X'
+                    
+                    # Verifica predizioni
+                    exact_correct = match['Risultato secco previsto'] == actual_result
+                    
+                    # Verifica doppia chance
+                    double_chance = match['Doppia chance prevista']
+                    double_correct = False
+                    if double_chance == '1X' and actual_result in ['1', 'X']:
+                        double_correct = True
+                    elif double_chance == '2X' and actual_result in ['2', 'X']:
+                        double_correct = True
+                    elif double_chance == '12' and actual_result in ['1', '2']:
+                        double_correct = True
+                    
+                    col1, col2 = st.columns(2)
+                    with col1:
+                        exact_status = "✅ CORRETTO" if exact_correct else "❌ ERRATO"
+                        st.markdown(f"**🎯 Risultato Secco:** {exact_status}")
+                    
+                    with col2:
+                        double_status = "✅ CORRETTO" if double_correct else "❌ ERRATO"
+                        st.markdown(f"**🎲 Doppia Chance:** {double_status}")
+            
+            else:
+                st.markdown(f"""
+                <div class="live-score">
+                    <h4>⏰ PROGRAMMATA</h4>
+                    <p>La partita inizierà presto</p>
+                </div>
+                """, unsafe_allow_html=True)
+            
+            st.markdown("---")
+    
+    else:
+        st.info("🎮 Nessuna partita in programma al momento. Le prossime predizioni appariranno qui.")
 
+# Footer
+st.markdown("---")
+st.markdown("""
+<div style="text-align: center; color: #666; padding: 20px;">
+    ⚽ Dashboard Predizioni Calcio | Aggiornato automaticamente<br>
+    📱 Ottimizzato per smartphone
+</div>
+""", unsafe_allow_html=True)
 
+# Auto-refresh per dati live (ogni 30 secondi quando ci sono partite live)
+if len(df[(df['Risultato predizione (risultato secco)'] == 'Da giocare')]) > 0:
+    time.sleep(0.1)  # Piccola pausa per evitare refresh troppo frequenti

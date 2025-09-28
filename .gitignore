@@ -1,0 +1,46 @@
+# File di configurazione con dati sensibili
+config.py
+.env
+secrets.toml
+
+# Cache Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# Ambiente virtuale
+venv/
+env/
+ENV/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Streamlit
+.streamlit/secrets.toml
+
+# Log files
+*.log
+
+# Database locale
+*.db
+*.sqlite3
+
+# File temporanei
+*.tmp
+*.temp
+
+# Backup files
+*.bak
+*~

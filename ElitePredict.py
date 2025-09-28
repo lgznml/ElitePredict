@@ -10,7 +10,7 @@ import time
 
 # Configurazione pagina per mobile
 st.set_page_config(
-    page_title="⚽ Predizioni Calcio",
+    page_title="Predizioni Calcio",
     page_icon="⚽",
     layout="wide",
     initial_sidebar_state="collapsed"
@@ -111,28 +111,83 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-# Funzione per caricare dati dal Google Sheets
+import re
+from urllib.parse import urlparse, parse_qs, unquote
+
+def parse_sheet_url(url: str):
+    """
+    Estrae automaticamente sheet_id e gid da un Google Sheets URL.
+    Restituisce (sheet_id, gid_or_None).
+    """
+    url = (url or "").strip()
+    parsed = urlparse(url)
+
+    # 1) Prova ad ottenere l'id dal percorso /d/<id>/
+    m = re.search(r'/d/([a-zA-Z0-9-_]+)', parsed.path)
+    if m:
+        sheet_id = m.group(1)
+    else:
+        # 2) Prova a trovare id nella query (es. ?id=<id>)
+        qs = parse_qs(parsed.query)
+        id_list = qs.get('id') or qs.get('spreadsheetId')
+        if id_list:
+            sheet_id = id_list[0]
+        else:
+            # 3) Cerca nell'fragment
+            frag = unquote(parsed.fragment or "")
+            m2 = re.search(r'id=([a-zA-Z0-9-_]+)', frag)
+            if m2:
+                sheet_id = m2.group(1)
+            else:
+                raise ValueError("Impossibile trovare lo sheet id nell'URL fornito.")
+
+    # Estrai il gid (può essere in query o nel fragment)
+    qs = parse_qs(parsed.query)
+    gid = None
+    if 'gid' in qs:
+        gid = qs['gid'][0]
+    else:
+        frag = unquote(parsed.fragment or "")
+        m_gid = re.search(r'gid=(\d+)', frag)
+        if m_gid:
+            gid = m_gid.group(1)
+        else:
+            m_gid2 = re.search(r'gid[:=](\d+)', frag)
+            if m_gid2:
+                gid = m_gid2.group(1)
+
+    return sheet_id, gid
+
+def make_csv_export_url(sheet_id: str, gid: str | None = None) -> str:
+    """
+    Costruisce l'URL di esportazione CSV per Google Sheets.
+    """
+    if gid:
+        return f"https://docs.google.com/spreadsheets/d/{sheet_id}/export?format=csv&gid={gid}"
+    else:
+        return f"https://docs.google.com/spreadsheets/d/{sheet_id}/export?format=csv"
+
+
 @st.cache_data(ttl=300)  # Cache per 5 minuti
 def load_data():
     """
-    Carica i dati dal Google Sheets convertendo l'URL in formato CSV
+    Carica i dati dal Google Sheets convertendo l'URL in formato CSV.
+    Ora rileva automaticamente sheet_id e gid dall'URL.
     """
-    # URL originale del Google Sheets
+    # URL originale del Google Sheets (puoi sostituirlo con qualsiasi URL valido)
     google_sheets_url = "https://docs.google.com/spreadsheets/d/1w_hyAZrPgO7NZxrDwS5hTRUn2bwLwJ7b/edit?gid=170181210"
     
     try:
-        # Estrae l'ID del foglio e il GID
-        sheet_id = "1w_hyAZrPgO7NZxrDwS5hTRUn2bwLwJ7b"
-        gid = "170181210"
+        # Estrae lo sheet_id e il gid dall'URL
+        sheet_id, gid = parse_sheet_url(google_sheets_url)
         
         # Costruisce l'URL CSV
-        csv_url = f"https://docs.google.com/spreadsheets/d/{sheet_id}/export?format=csv&gid={gid}"
+        csv_url = make_csv_export_url(sheet_id, gid)
         
         # Legge i dati dal CSV
         df = pd.read_csv(csv_url)
         
         # Pulizia e preprocessing dei dati
-        # Rimuove spazi bianchi dai nomi delle colonne
         df.columns = df.columns.str.strip()
         
         # Converte le date in formato corretto se necessario
@@ -197,8 +252,66 @@ def get_live_scores(home_team, away_team):
 # Caricamento dati
 df = load_data()
 
+# Debug info (mostra solo in sviluppo)
+if st.sidebar.button("🔧 Debug Info"):
+    st.sidebar.write("**Colonne disponibili:**")
+    st.sidebar.write(df.columns.tolist())
+    st.sidebar.write("**Dimensioni dataset:**", df.shape)
+    st.sidebar.write("**Prime 3 righe:**")
+    st.sidebar.write(df.head(3))
+    
+    # Info sui valori nelle colonne chiave
+    if 'Risultato predizione (risultato secco)' in df.columns:
+        st.sidebar.write("**Valori 'Risultato secco':**")
+        st.sidebar.write(df['Risultato predizione (risultato secco)'].value_counts())
+    
+    if 'Risultato predizione (doppia chance)' in df.columns:
+        st.sidebar.write("**Valori 'Doppia chance':**")
+        st.sidebar.write(df['Risultato predizione (doppia chance)'].value_counts())
+
 # Header
 st.markdown("# ⚽ Dashboard Predizioni Calcio")
+
+# Filtro data globale
+st.markdown("## 📅 Filtro Data")
+col1, col2, col3 = st.columns([1, 1, 1])
+
+with col1:
+    # Data minima e massima disponibili
+    if 'Data partita' in df.columns and not df['Data partita'].isna().all():
+        min_date = df['Data partita'].min().date()
+        max_date = df['Data partita'].max().date()
+    else:
+        min_date = datetime.now().date()
+        max_date = datetime.now().date() + timedelta(days=30)
+
+with col2:
+    selected_date = st.date_input(
+        "Seleziona data partite:",
+        value=datetime.now().date(),
+        min_value=min_date,
+        max_value=max_date,
+        help="Filtra le partite per una data specifica"
+    )
+
+with col3:
+    show_all = st.checkbox("Mostra tutte le date", value=False, help="Ignora il filtro data e mostra tutte le partite")
+
+# Applica filtro data
+if not show_all and 'Data partita' in df.columns:
+    df_filtered = df[df['Data partita'].dt.date == selected_date].copy()
+    if len(df_filtered) == 0:
+        st.warning(f"⚠️ Nessuna partita trovata per il {selected_date.strftime('%d/%m/%Y')}")
+        st.info("💡 Prova a selezionare una data diversa o attiva 'Mostra tutte le date'")
+else:
+    df_filtered = df.copy()
+
+# Info filtro applicato
+if not show_all:
+    st.info(f"📅 Visualizzando partite del {selected_date.strftime('%d/%m/%Y')} - {len(df_filtered)} partite trovate")
+else:
+    st.info(f"📅 Visualizzando tutte le partite - {len(df_filtered)} partite totali")
+
 st.markdown("---")
 
 # Tabs principali
@@ -207,10 +320,10 @@ tab1, tab2 = st.tabs(["📊 Statistiche", "🔴 Live Predizioni"])
 with tab1:
     st.markdown("## 📈 Performance delle Predizioni")
     
-    # Filtra partite terminate
-    completed_matches = df[
-        (df['Risultato predizione (risultato secco)'] != 'Da giocare') &
-        (df['Risultato predizione (doppia chance)'] != 'Da giocare')
+    # Filtra partite terminate dal dataset filtrato per data
+    completed_matches = df_filtered[
+        (df_filtered['Risultato predizione (risultato secco)'] != 'Da giocare') &
+        (df_filtered['Risultato predizione (doppia chance)'] != 'Da giocare')
     ]
     
     if len(completed_matches) > 0:
@@ -284,10 +397,13 @@ with tab1:
         for idx, match in completed_matches.iterrows():
             col1, col2 = st.columns([3, 1])
             
+            # Formatta la data per visualizzazione
+            match_date = match['Data partita'].strftime('%d/%m/%Y') if pd.notna(match['Data partita']) else 'Data N/D'
+            
             with col1:
                 st.markdown(f"""
                 **{match['Squadra casa']} vs {match['Squadra ospite']}**  
-                📅 {match['Data partita']} | 🏆 {match['Campionato']}  
+                📅 {match_date} | 🏆 {match['Campionato']}  
                 🎯 Previsto: {match['Risultato secco previsto']} | Reale: {match['Risultato secco reale']}  
                 🎲 Doppia Chance: {match['Doppia chance prevista']} | Confidence: {match['Confidence']}
                 """)
@@ -313,10 +429,10 @@ with tab1:
 with tab2:
     st.markdown("## 🔴 Predizioni Live")
     
-    # Filtra partite da giocare
-    upcoming_matches = df[
-        (df['Risultato predizione (risultato secco)'] == 'Da giocare') |
-        (df['Risultato predizione (doppia chance)'] == 'Da giocare')
+    # Filtra partite da giocare dal dataset filtrato per data
+    upcoming_matches = df_filtered[
+        (df_filtered['Risultato predizione (risultato secco)'] == 'Da giocare') |
+        (df_filtered['Risultato predizione (doppia chance)'] == 'Da giocare')
     ]
     
     if len(upcoming_matches) > 0:
@@ -331,16 +447,23 @@ with tab2:
             # Ottieni risultato live
             live_data = get_live_scores(match['Squadra casa'], match['Squadra ospite'])
             
+            # Formatta la data per visualizzazione
+            match_date = match['Data partita'].strftime('%d/%m/%Y') if pd.notna(match['Data partita']) else 'Data N/D'
+            
             st.markdown(f"""
             <div class="prediction-card">
                 <h3>⚽ {match['Squadra casa']} vs {match['Squadra ospite']}</h3>
-                <p>📅 {match['Data partita']} | 🏆 {match['Campionato']} | Giornata {match['Giornata']}</p>
+                <p>📅 {match_date} | 🏆 {match['Campionato']} | Giornata {match['Giornata']}</p>
                 
-                <div style="display: flex; justify-content: space-between; margin: 15px 0;">
-                    <div>
-                        <strong>🎯 Risultato Secco Previsto:</strong> {match['Risultato secco previsto']}<br>
-                        <strong>🎲 Doppia Chance:</strong> {match['Doppia chance prevista']}<br>
-                        <strong>📊 Confidence:</strong> {match['Confidence']}
+                <div style="margin: 15px 0;">
+                    <div style="margin: 10px 0;">
+                        <span style="color: #FFE4B5;"><strong>🎯 Risultato Secco Previsto:</strong></span> {match['Risultato secco previsto']}
+                    </div>
+                    <div style="margin: 10px 0;">
+                        <span style="color: #FFE4B5;"><strong>🎲 Doppia Chance:</strong></span> {match['Doppia chance prevista']}
+                    </div>
+                    <div style="margin: 10px 0;">
+                        <span style="color: #FFE4B5;"><strong>📊 Confidence:</strong></span> {match['Confidence']}
                     </div>
                 </div>
             </div>
@@ -421,7 +544,3 @@ st.markdown("""
 # Auto-refresh per dati live (ogni 30 secondi quando ci sono partite live)
 if len(df[(df['Risultato predizione (risultato secco)'] == 'Da giocare')]) > 0:
     time.sleep(0.1)  # Piccola pausa per evitare refresh troppo frequenti
-
-
-
-

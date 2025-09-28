@@ -175,7 +175,14 @@ def load_data():
     Ora rileva automaticamente sheet_id e gid dall'URL.
     """
     # URL originale del Google Sheets (puoi sostituirlo con qualsiasi URL valido)
-    google_sheets_url = "https://docs.google.com/spreadsheets/d/1w_hyAZrPgO7NZxrDwS5hTRUn2bwLwJ7b/edit?gid=170181210"
+    import os
+    google_sheets_url = os.getenv('GOOGLE_SHEETS_URL', 'https://esempio-fallback.com')
+
+    # Verifica che l'URL sia stato configurato
+    if google_sheets_url == 'https://esempio-fallback.com':
+        st.error("⚠️ URL Google Sheets non configurato. Imposta la variabile d'ambiente GOOGLE_SHEETS_URL")
+        st.info("💡 Consulta la documentazione per configurare l'accesso ai dati")
+        st.stop()
     
     try:
         # Estrae lo sheet_id e il gid dall'URL
@@ -478,4 +485,5 @@ st.markdown("""
     📱 Ottimizzato per smartphone
 </div>
 """, unsafe_allow_html=True)
+
 

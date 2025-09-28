@@ -122,8 +122,8 @@ def load_data():
     
     try:
         # Estrae l'ID del foglio e il GID
-        sheet_id = "15sGAUABd3b-dsQ-iW8AHVclM_hSu_cD_"
-        gid = "843549565"
+        sheet_id = "1w_hyAZrPgO7NZxrDwS5hTRUn2bwLwJ7b"
+        gid = "170181210"
         
         # Costruisce l'URL CSV
         csv_url = f"https://docs.google.com/spreadsheets/d/{sheet_id}/export?format=csv&gid={gid}"
@@ -421,6 +421,7 @@ st.markdown("""
 # Auto-refresh per dati live (ogni 30 secondi quando ci sono partite live)
 if len(df[(df['Risultato predizione (risultato secco)'] == 'Da giocare')]) > 0:
     time.sleep(0.1)  # Piccola pausa per evitare refresh troppo frequenti
+
 
 
 

@@ -174,7 +174,7 @@ def load_data():
     Carica i dati dal Google Sheets convertendo l'URL in formato CSV.
     Ora rileva automaticamente sheet_id e gid dall'URL.
     """
-    # URL originale del Google Sheets (puoi sostituirlo con qualsiasi URL valido)
+
     import os
     google_sheets_url = os.getenv('GOOGLE_SHEETS_URL', 'https://esempio-fallback.com')
 
@@ -260,9 +260,9 @@ if st.sidebar.button("🔧 Debug Info"):
 # Header
 st.markdown("# ⚽ Dashboard Predizioni Calcio")
 
-# Filtro data globale
-st.markdown("## 📅 Filtro Data")
-col1, col2, col3 = st.columns([1, 1, 1])
+# Filtri globali
+st.markdown("## 📅 Filtri")
+col1, col2, col3, col4 = st.columns([1, 1, 1, 1])
 
 with col1:
     # Data minima e massima disponibili
@@ -272,8 +272,7 @@ with col1:
     else:
         min_date = datetime.now().date()
         max_date = datetime.now().date() + timedelta(days=30)
-
-with col2:
+        
     selected_date = st.date_input(
         "Seleziona data partite:",
         value=datetime.now().date(),
@@ -282,7 +281,7 @@ with col2:
         help="Filtra le partite da questa data in poi"
     )
 
-with col3:
+with col2:
     only_selected_date = st.checkbox(
         "Solo questa data", 
         value=False, 
@@ -290,32 +289,53 @@ with col3:
     )
     show_all = st.checkbox("Mostra tutte le date", value=False, help="Ignora il filtro data e mostra tutte le partite")
 
-# Applica filtro data
-if not show_all and 'Data partita' in df.columns:
+with col3:
+    # Filtro campionato
+    available_leagues = ['Tutti'] + sorted(df['Campionato'].dropna().unique().tolist())
+    selected_league = st.selectbox(
+        "Campionato:",
+        options=available_leagues,
+        index=0,
+        help="Filtra per campionato specifico"
+    )
+
+with col4:
+    st.write("")  # Spazio vuoto per allineamento
+
+# Applica filtri data e campionato
+df_base = df.copy()
+
+# Filtro campionato
+if selected_league != 'Tutti':
+    df_base = df_base[df_base['Campionato'] == selected_league]
+
+# Filtro data
+if not show_all and 'Data partita' in df_base.columns:
     if only_selected_date:
         # Mostra solo partite della data selezionata
-        df_filtered = df[df['Data partita'].dt.date == selected_date].copy()
+        df_filtered = df_base[df_base['Data partita'].dt.date == selected_date].copy()
         filter_info = f"del {selected_date.strftime('%d/%m/%Y')}"
     else:
         # Mostra partite dalla data selezionata in poi
-        df_filtered = df[df['Data partita'].dt.date >= selected_date].copy()
+        df_filtered = df_base[df_base['Data partita'].dt.date >= selected_date].copy()
         filter_info = f"dal {selected_date.strftime('%d/%m/%Y')} in poi"
     
     if len(df_filtered) == 0:
-        st.warning(f"⚠️ Nessuna partita trovata {filter_info}")
-        st.info("💡 Prova a selezionare una data diversa o attiva 'Mostra tutte le date'")
+        st.warning(f"⚠️ Nessuna partita trovata {filter_info}" + (f" per {selected_league}" if selected_league != 'Tutti' else ""))
+        st.info("💡 Prova a selezionare una data diversa, un altro campionato o attiva 'Mostra tutte le date'")
 else:
-    df_filtered = df.copy()
+    df_filtered = df_base.copy()
     filter_info = "tutte le date"
 
 # Info filtro applicato
+league_info = f" - {selected_league}" if selected_league != 'Tutti' else ""
 if not show_all:
     if only_selected_date:
-        st.info(f"📅 Visualizzando partite {filter_info} - {len(df_filtered)} partite trovate")
+        st.info(f"📅 Visualizzando partite {filter_info}{league_info} - {len(df_filtered)} partite trovate")
     else:
-        st.info(f"📅 Visualizzando partite {filter_info} - {len(df_filtered)} partite trovate")
+        st.info(f"📅 Visualizzando partite {filter_info}{league_info} - {len(df_filtered)} partite trovate")
 else:
-    st.info(f"📅 Visualizzando tutte le partite - {len(df_filtered)} partite totali")
+    st.info(f"📅 Visualizzando tutte le partite{league_info} - {len(df_filtered)} partite totali")
     
 st.markdown("---")
 
@@ -442,7 +462,12 @@ with tab2:
     
     if len(upcoming_matches) > 0:
         st.markdown(f"### 🎮 {len(upcoming_matches)} Partite in Programma")
-       
+        
+        # Auto-refresh ogni 30 secondi
+        if st.button("🔄 Aggiorna Risultati Live", use_container_width=True):
+            st.cache_data.clear()
+            st.rerun()
+        
         for idx, match in upcoming_matches.iterrows():
             # Formatta la data per visualizzazione
             match_date = match['Data partita'].strftime('%d/%m/%Y') if pd.notna(match['Data partita']) else 'Data N/D'
@@ -485,5 +510,3 @@ st.markdown("""
     📱 Ottimizzato per smartphone
 </div>
 """, unsafe_allow_html=True)
-
-

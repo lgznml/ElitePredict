@@ -111,26 +111,69 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-# Funzione per caricare dati (sostituisci con il tuo metodo di caricamento)
+# Funzione per caricare dati dal Google Sheets
 @st.cache_data(ttl=300)  # Cache per 5 minuti
 def load_data():
-    # Qui dovresti caricare i dati dal tuo Excel/Google Sheets
-    # Per ora uso dati di esempio
-    data = {
-        'Data predizione': ['23/8/2025', '23/8/2025', '24/8/2025', '24/8/2025', '25/8/2025'],
-        'Squadra casa': ['Manchester City', 'Bournemouth', 'Arsenal', 'Liverpool', 'Chelsea'],
-        'Squadra ospite': ['Tottenham', 'Wolves', 'Brighton', 'Crystal Palace', 'Newcastle'],
-        'Risultato secco previsto': ['1', '1', '1', '1', '1'],
-        'Risultato secco reale': ['2', '1', '', '', ''],
-        'Doppia chance prevista': ['12', '1X', '1X', '12', '1X'],
-        'Confidence': ['Alta', 'Media', 'Alta', 'Media', 'Bassa'],
-        'Risultato predizione (risultato secco)': ['Errato', 'Corretto', 'Da giocare', 'Da giocare', 'Da giocare'],
-        'Risultato predizione (doppia chance)': ['Corretto', 'Corretto', 'Da giocare', 'Da giocare', 'Da giocare'],
-        'Giornata': [2, 2, 3, 3, 3],
-        'Campionato': ['Premier League'] * 5,
-        'Data partita': ['23/8/2025', '23/8/2025', '24/8/2025', '24/8/2025', '25/8/2025']
-    }
-    return pd.DataFrame(data)
+    """
+    Carica i dati dal Google Sheets convertendo l'URL in formato CSV
+    """
+    # URL originale del Google Sheets
+    google_sheets_url = "https://docs.google.com/spreadsheets/d/15sGAUABd3b-dsQ-iW8AHVclM_hSu_cD_/edit?gid=843549565#gid=843549565"
+    
+    try:
+        # Estrae l'ID del foglio e il GID
+        sheet_id = "15sGAUABd3b-dsQ-iW8AHVclM_hSu_cD_"
+        gid = "843549565"
+        
+        # Costruisce l'URL CSV
+        csv_url = f"https://docs.google.com/spreadsheets/d/{sheet_id}/export?format=csv&gid={gid}"
+        
+        # Legge i dati dal CSV
+        df = pd.read_csv(csv_url)
+        
+        # Pulizia e preprocessing dei dati
+        # Rimuove spazi bianchi dai nomi delle colonne
+        df.columns = df.columns.str.strip()
+        
+        # Converte le date in formato corretto se necessario
+        if 'Data predizione' in df.columns:
+            df['Data predizione'] = pd.to_datetime(df['Data predizione'], format='%d/%m/%Y', errors='coerce')
+        if 'Data partita' in df.columns:
+            df['Data partita'] = pd.to_datetime(df['Data partita'], format='%d/%m/%Y', errors='coerce')
+        
+        # Rimuove righe completamente vuote
+        df = df.dropna(how='all')
+        
+        # Sostituisce NaN con stringhe vuote per alcune colonne
+        text_columns = ['Risultato secco reale', 'Risultato predizione (risultato secco)', 
+                       'Risultato predizione (doppia chance)']
+        for col in text_columns:
+            if col in df.columns:
+                df[col] = df[col].fillna('Da giocare')
+        
+        st.success(f"✅ Dati caricati con successo! {len(df)} partite trovate.")
+        return df
+        
+    except Exception as e:
+        st.error(f"❌ Errore nel caricamento dei dati: {str(e)}")
+        st.info("🔄 Utilizzo dati di esempio per il test dell'app...")
+        
+        # Fallback con dati di esempio in caso di errore
+        data = {
+            'Data predizione': pd.to_datetime(['23/8/2025', '23/8/2025', '24/8/2025', '24/8/2025', '25/8/2025'], format='%d/%m/%Y'),
+            'Squadra casa': ['Manchester City', 'Bournemouth', 'Arsenal', 'Liverpool', 'Chelsea'],
+            'Squadra ospite': ['Tottenham', 'Wolves', 'Brighton', 'Crystal Palace', 'Newcastle'],
+            'Risultato secco previsto': ['1', '1', '1', '1', '1'],
+            'Risultato secco reale': ['2', '1', '', '', ''],
+            'Doppia chance prevista': ['12', '1X', '1X', '12', '1X'],
+            'Confidence': ['Alta', 'Media', 'Alta', 'Media', 'Bassa'],
+            'Risultato predizione (risultato secco)': ['Errato', 'Corretto', 'Da giocare', 'Da giocare', 'Da giocare'],
+            'Risultato predizione (doppia chance)': ['Corretto', 'Corretto', 'Da giocare', 'Da giocare', 'Da giocare'],
+            'Giornata': [2, 2, 3, 3, 3],
+            'Campionato': ['Premier League'] * 5,
+            'Data partita': pd.to_datetime(['23/8/2025', '23/8/2025', '24/8/2025', '24/8/2025', '25/8/2025'], format='%d/%m/%Y')
+        }
+        return pd.DataFrame(data)
 
 # Funzione per ottenere risultati live (simulata)
 @st.cache_data(ttl=60)  # Cache per 1 minuto

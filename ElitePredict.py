@@ -230,25 +230,6 @@ def load_data():
         }
         return pd.DataFrame(data)
 
-# Funzione per ottenere risultati live (simulata)
-@st.cache_data(ttl=60)  # Cache per 1 minuto
-def get_live_scores(home_team, away_team):
-    # Simulazione di chiamata API per risultati live
-    # In realtà dovresti usare un'API come Football-Data.org, RapidAPI, etc.
-    import random
-    
-    # Simula risultati casuali
-    home_score = random.randint(0, 4)
-    away_score = random.randint(0, 4)
-    status = random.choice(['LIVE', 'FT', 'HT', 'SCHEDULED'])
-    
-    return {
-        'home_score': home_score,
-        'away_score': away_score,
-        'status': status,
-        'minute': random.randint(1, 90) if status == 'LIVE' else None
-    }
-
 # Caricamento dati
 df = load_data()
 
@@ -461,90 +442,35 @@ with tab2:
             st.rerun()
         
         for idx, match in upcoming_matches.iterrows():
-            # Ottieni risultato live
-            live_data = get_live_scores(match['Squadra casa'], match['Squadra ospite'])
-            
             # Formatta la data per visualizzazione
             match_date = match['Data partita'].strftime('%d/%m/%Y') if pd.notna(match['Data partita']) else 'Data N/D'
             
-            st.markdown(f"""
-            <div class="prediction-card">
-                <h3>⚽ {match['Squadra casa']} vs {match['Squadra ospite']}</h3>
-                <p>📅 {match_date} | 🏆 {match['Campionato']} | Giornata {match['Giornata']}</p>
-                
-                <div style="margin: 15px 0;">
-                    <div style="margin: 10px 0;">
-                        <span style="color: #FFE4B5;"><strong>🎯 Risultato Secco Previsto:</strong></span> {match['Risultato secco previsto']}
-                    </div>
-                    <div style="margin: 10px 0;">
-                        <span style="color: #FFE4B5;"><strong>🎲 Doppia Chance:</strong></span> {match['Doppia chance prevista']}
-                    </div>
-                    <div style="margin: 10px 0;">
-                        <span style="color: #FFE4B5;"><strong>📊 Confidence:</strong></span> {match['Confidence']}
-                    </div>
-                </div>
-            </div>
-            """, unsafe_allow_html=True)
-            
-            # Risultato live
-            if live_data['status'] in ['LIVE', 'FT', 'HT']:
-                status_text = {
-                    'LIVE': f"🔴 LIVE - {live_data['minute']}'",
-                    'FT': "✅ FINITA",
-                    'HT': "⏸️ INTERVALLO"
-                }.get(live_data['status'], live_data['status'])
-                
+            # Card con predizioni usando container normale invece di HTML
+            with st.container():
                 st.markdown(f"""
-                <div class="live-score">
-                    <h4>{status_text}</h4>
-                    <h2>{match['Squadra casa']} {live_data['home_score']} - {live_data['away_score']} {match['Squadra ospite']}</h2>
+                <div class="prediction-card">
+                    <h3>⚽ {match['Squadra casa']} vs {match['Squadra ospite']}</h3>
+                    <p>📅 {match_date} | 🏆 {match['Campionato']} | Giornata {match['Giornata']}</p>
                 </div>
                 """, unsafe_allow_html=True)
                 
-                # Analisi predizione in tempo reale
-                if live_data['status'] == 'FT':
-                    home_score = live_data['home_score']
-                    away_score = live_data['away_score']
-                    
-                    # Determina risultato reale
-                    if home_score > away_score:
-                        actual_result = '1'
-                    elif home_score < away_score:
-                        actual_result = '2'
-                    else:
-                        actual_result = 'X'
-                    
-                    # Verifica predizioni
-                    exact_correct = match['Risultato secco previsto'] == actual_result
-                    
-                    # Verifica doppia chance
-                    double_chance = match['Doppia chance prevista']
-                    double_correct = False
-                    if double_chance == '1X' and actual_result in ['1', 'X']:
-                        double_correct = True
-                    elif double_chance == '2X' and actual_result in ['2', 'X']:
-                        double_correct = True
-                    elif double_chance == '12' and actual_result in ['1', '2']:
-                        double_correct = True
-                    
-                    col1, col2 = st.columns(2)
-                    with col1:
-                        exact_status = "✅ CORRETTO" if exact_correct else "❌ ERRATO"
-                        st.markdown(f"**🎯 Risultato Secco:** {exact_status}")
-                    
-                    with col2:
-                        double_status = "✅ CORRETTO" if double_correct else "❌ ERRATO"
-                        st.markdown(f"**🎲 Doppia Chance:** {double_status}")
-            
-            else:
-                st.markdown(f"""
-                <div class="live-score">
-                    <h4>⏰ PROGRAMMATA</h4>
-                    <p>La partita inizierà presto</p>
-                </div>
-                """, unsafe_allow_html=True)
-            
-            st.markdown("---")
+                # Predizioni usando colonne Streamlit normali
+                col1, col2, col3 = st.columns(3)
+                
+                with col1:
+                    st.markdown("**🎯 Risultato Secco Previsto:**")
+                    st.markdown(f"**{match['Risultato secco previsto']}**")
+                
+                with col2:
+                    st.markdown("**🎲 Doppia Chance:**")
+                    st.markdown(f"**{match['Doppia chance prevista']}**")
+                
+                with col3:
+                    st.markdown("**📊 Confidence:**")
+                    st.markdown(f"**{match['Confidence']}**")
+                
+                # Spazio tra le partite
+                st.markdown("---")
     
     else:
         st.info("🎮 Nessuna partita in programma al momento. Le prossime predizioni appariranno qui.")
@@ -557,8 +483,3 @@ st.markdown("""
     📱 Ottimizzato per smartphone
 </div>
 """, unsafe_allow_html=True)
-
-# Auto-refresh per dati live (ogni 30 secondi quando ci sono partite live)
-if len(df[(df['Risultato predizione (risultato secco)'] == 'Da giocare')]) > 0:
-    time.sleep(0.1)  # Piccola pausa per evitare refresh troppo frequenti
-

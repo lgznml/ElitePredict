@@ -272,10 +272,14 @@ with col1:
     else:
         min_date = datetime.now().date()
         max_date = datetime.now().date() + timedelta(days=30)
+    
+    # Assicura che il valore predefinito sia nel range valido
+    today = datetime.now().date()
+    default_date = today if min_date <= today <= max_date else min_date
         
     selected_date = st.date_input(
         "Seleziona data partite:",
-        value=datetime.now().date(),
+        value=default_date,
         min_value=min_date,
         max_value=max_date,
         help="Filtra le partite da questa data in poi"
@@ -505,4 +509,5 @@ st.markdown("""
     📱 Ottimizzato per smartphone
 </div>
 """, unsafe_allow_html=True)
+
 

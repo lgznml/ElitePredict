@@ -273,9 +273,13 @@ with col1:
         min_date = datetime.now().date()
         max_date = datetime.now().date() + timedelta(days=30)
     
-    # Assicura che il valore predefinito sia nel range valido
+    # Calcola il lunedì della settimana corrente
     today = datetime.now().date()
-    default_date = today if min_date <= today <= max_date else min_date
+    days_since_monday = today.weekday()  # 0=Lunedì, 6=Domenica
+    monday_of_week = today - timedelta(days=days_since_monday)
+    
+    # Assicura che il valore predefinito sia nel range valido
+    default_date = monday_of_week if min_date <= monday_of_week <= max_date else min_date
         
     selected_date = st.date_input(
         "Seleziona data partite:",
@@ -509,5 +513,6 @@ st.markdown("""
     📱 Ottimizzato per smartphone
 </div>
 """, unsafe_allow_html=True)
+
 
 

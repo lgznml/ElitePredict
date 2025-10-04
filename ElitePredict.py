@@ -348,7 +348,13 @@ else:
 st.markdown("---")
 
 # Tabs principali
-tab1, tab2 = st.tabs(["📊 Statistiche", "🔴 Live Predizioni"])
+# Calcola il numero di partite da giocare per il badge
+upcoming_count = len(df_filtered[
+    (df_filtered['Risultato predizione (risultato secco)'] == 'Da giocare') |
+    (df_filtered['Risultato predizione (doppia chance)'] == 'Da giocare')
+])
+
+tab1, tab2 = st.tabs(["📊 Statistiche", f"🔴 Predizioni ({upcoming_count})"])
 
 with tab1:
     # Genera il testo dinamico basato sui filtri applicati
@@ -468,7 +474,7 @@ with tab1:
         st.info("📊 Nessuna partita completata ancora. Le statistiche appariranno qui una volta terminate le prime partite.")
 
 with tab2:
-    st.markdown("## 🔴 Predizioni Live")
+    st.markdown("## 🔴 Predizioni")
     
     # Filtra partite da giocare dal dataset filtrato per data
     upcoming_matches = df_filtered[
@@ -521,6 +527,7 @@ st.markdown("""
     📱 Ottimizzato per smartphone
 </div>
 """, unsafe_allow_html=True)
+
 
 
 

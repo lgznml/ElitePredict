@@ -351,7 +351,15 @@ st.markdown("---")
 tab1, tab2 = st.tabs(["📊 Statistiche", "🔴 Live Predizioni"])
 
 with tab1:
-    st.markdown("## 📈 Performance delle Predizioni")
+    # Genera il testo dinamico basato sui filtri applicati
+    if show_all:
+        title_date_info = ""
+    elif only_selected_date:
+        title_date_info = f" del {selected_date.strftime('%d/%m/%Y')}"
+    else:
+        title_date_info = f" dal {selected_date.strftime('%d/%m/%Y')}"
+    
+    st.markdown(f"## 📈 Performance delle Predizioni{title_date_info}")
     
     # Filtra partite terminate dal dataset filtrato per data
     completed_matches = df_filtered[
@@ -513,6 +521,7 @@ st.markdown("""
     📱 Ottimizzato per smartphone
 </div>
 """, unsafe_allow_html=True)
+
 
 
 

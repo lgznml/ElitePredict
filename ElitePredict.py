@@ -1142,10 +1142,11 @@ st.markdown("""
 """, unsafe_allow_html=True)
 st.markdown("""
 <div style="text-align: center; color: #666; padding: 20px;">
-    ⚽ Dashboard Predizioni Calcio | Aggiornato automaticamente<br>
-    📱 Ottimizzato per smartphone
+    ⚽ Dashboard Predizioni Calcistiche | Aggiornato automaticamente<br>
+    📱 Il sistema che genera le predizioni è stato sviluppato in n8n
 </div>
 """, unsafe_allow_html=True)
+
 
 
 

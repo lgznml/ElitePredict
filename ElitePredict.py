@@ -290,8 +290,7 @@ def load_data():
         for col in text_columns:
             if col in df.columns:
                 df[col] = df[col].fillna('Da giocare')
-        
-        st.success(f"✅ Dati caricati con successo! {len(df)} partite trovate.")
+                
         return df
         
     except Exception as e:
@@ -438,13 +437,6 @@ else:
 
 # Info filtro applicato
 league_info = f" - {selected_league}" if selected_league != 'Tutti' else ""
-if not show_all:
-    if only_selected_date:
-        st.info(f"📅 Visualizzando partite {filter_info}{league_info} - {len(df_filtered)} partite trovate")
-    else:
-        st.info(f"📅 Visualizzando partite {filter_info}{league_info} - {len(df_filtered)} partite trovate")
-else:
-    st.info(f"📅 Visualizzando tutte le partite{league_info} - {len(df_filtered)} partite totali")
     
 st.markdown("""
 <div style="
@@ -1154,6 +1146,7 @@ st.markdown("""
     📱 Ottimizzato per smartphone
 </div>
 """, unsafe_allow_html=True)
+
 
 
 

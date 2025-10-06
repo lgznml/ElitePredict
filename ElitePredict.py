@@ -378,6 +378,7 @@ else:
     min_date = datetime.now().date()
     max_date = datetime.now().date() + timedelta(days=30)
 
+'''
 # Calcola il lunedì della settimana corrente e quello della settimana precedente
 today = datetime.now().date()
 days_since_monday = today.weekday()  # 0=Lunedì, 6=Domenica
@@ -391,11 +392,11 @@ elif previous_monday < min_date:
     default_date = min_date
 else:
     default_date = max_date
-
+'''
     
 selected_date = st.sidebar.date_input(
     "Seleziona data partite:",
-    value=default_date,
+    value=min_date,
     min_value=min_date,
     max_value=max_date,
     help="Filtra le partite da questa data in poi"
@@ -1153,6 +1154,7 @@ st.markdown("""
     📱 Il sistema che genera le predizioni è stato sviluppato in n8n
 </div>
 """, unsafe_allow_html=True)
+
 
 
 

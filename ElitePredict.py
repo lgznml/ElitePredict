@@ -1,4 +1,4 @@
-import streamlit as st
+zimport streamlit as st
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
@@ -469,17 +469,31 @@ with tab1:
         with col1:
             if 'Status Merged' in completed_filtered.columns:
                 status_stats_exact = completed_filtered.groupby('Status Merged').agg({
-                    'Risultato predizione (risultato secco)': lambda x: (x == 'Corretto').sum() / len(x) * 100
-                }).round(1).reset_index()
+                    'Risultato predizione (risultato secco)': [
+                        ('Accuratezza', lambda x: (x == 'Corretto').sum() / len(x) * 100),
+                        ('Totale', 'count'),
+                        ('Corrette', lambda x: (x == 'Corretto').sum())
+                    ]
+                }).round(1)
+                status_stats_exact.columns = ['Accuratezza', 'Totale', 'Corrette']
+                status_stats_exact = status_stats_exact.reset_index()
                 
                 fig = px.bar(
                     status_stats_exact,
                     x='Status Merged',
-                    y='Risultato predizione (risultato secco)',
+                    y='Accuratezza',
                     title='Accuratezza per Tipo Sfida (Risultato Secco)',
-                    labels={'Risultato predizione (risultato secco)': 'Accuratezza %', 'Status Merged': 'Tipo Sfida'},
-                    color='Risultato predizione (risultato secco)',
-                    color_continuous_scale='RdYlGn'
+                    labels={'Accuratezza': 'Accuratezza %', 'Status Merged': 'Tipo Sfida'},
+                    color='Accuratezza',
+                    color_continuous_scale='RdYlGn',
+                    hover_data={
+                        'Accuratezza': ':.1f',
+                        'Totale': True,
+                        'Corrette': True
+                    }
+                )
+                fig.update_traces(
+                    hovertemplate='<b>%{x}</b><br>Accuratezza: %{y:.1f}%<br>Corrette: %{customdata[1]}<br>Totale: %{customdata[0]}<extra></extra>'
                 )
                 fig.update_layout(height=400)
                 st.plotly_chart(fig, use_container_width=True)
@@ -487,17 +501,31 @@ with tab1:
         with col2:
             if 'Status Merged' in completed_filtered.columns:
                 status_stats_double = completed_filtered.groupby('Status Merged').agg({
-                    'Risultato predizione (doppia chance)': lambda x: (x == 'Corretto').sum() / len(x) * 100
-                }).round(1).reset_index()
+                    'Risultato predizione (doppia chance)': [
+                        ('Accuratezza', lambda x: (x == 'Corretto').sum() / len(x) * 100),
+                        ('Totale', 'count'),
+                        ('Corrette', lambda x: (x == 'Corretto').sum())
+                    ]
+                }).round(1)
+                status_stats_double.columns = ['Accuratezza', 'Totale', 'Corrette']
+                status_stats_double = status_stats_double.reset_index()
                 
                 fig = px.bar(
                     status_stats_double,
                     x='Status Merged',
-                    y='Risultato predizione (doppia chance)',
+                    y='Accuratezza',
                     title='Accuratezza per Tipo Sfida (Doppia Chance)',
-                    labels={'Risultato predizione (doppia chance)': 'Accuratezza %', 'Status Merged': 'Tipo Sfida'},
-                    color='Risultato predizione (doppia chance)',
-                    color_continuous_scale='Blues'
+                    labels={'Accuratezza': 'Accuratezza %', 'Status Merged': 'Tipo Sfida'},
+                    color='Accuratezza',
+                    color_continuous_scale='Blues',
+                    hover_data={
+                        'Accuratezza': ':.1f',
+                        'Totale': True,
+                        'Corrette': True
+                    }
+                )
+                fig.update_traces(
+                    hovertemplate='<b>%{x}</b><br>Accuratezza: %{y:.1f}%<br>Corrette: %{customdata[1]}<br>Totale: %{customdata[0]}<extra></extra>'
                 )
                 fig.update_layout(height=400)
                 st.plotly_chart(fig, use_container_width=True)

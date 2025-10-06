@@ -13,7 +13,7 @@ st.set_page_config(
     page_title="Predizioni Calcio",
     page_icon="⚽",
     layout="wide",
-    initial_sidebar_state="collapsed"
+    initial_sidebar_state="expanded"
 )
 
 # CSS per ottimizzazione mobile
@@ -261,54 +261,48 @@ if st.sidebar.button("🔧 Debug Info"):
 st.markdown("# ⚽ Dashboard Predizioni Calcio")
 
 # Filtri globali
-st.markdown("## 📅 Filtri")
-col1, col2, col3, col4 = st.columns([1, 1, 1, 1])
+# Filtri nella sidebar
+st.sidebar.markdown("## 📅 Filtri")
 
-with col1:
-    # Data minima e massima disponibili
-    if 'Data partita' in df.columns and not df['Data partita'].isna().all():
-        min_date = df['Data partita'].min().date()
-        max_date = df['Data partita'].max().date()
-    else:
-        min_date = datetime.now().date()
-        max_date = datetime.now().date() + timedelta(days=30)
+# Data minima e massima disponibili
+if 'Data partita' in df.columns and not df['Data partita'].isna().all():
+    min_date = df['Data partita'].min().date()
+    max_date = df['Data partita'].max().date()
+else:
+    min_date = datetime.now().date()
+    max_date = datetime.now().date() + timedelta(days=30)
+
+# Calcola il lunedì della settimana corrente
+today = datetime.now().date()
+days_since_monday = today.weekday()  # 0=Lunedì, 6=Domenica
+monday_of_week = today - timedelta(days=days_since_monday)
+
+# Assicura che il valore predefinito sia nel range valido
+default_date = monday_of_week if min_date <= monday_of_week <= max_date else min_date
     
-    # Calcola il lunedì della settimana corrente
-    today = datetime.now().date()
-    days_since_monday = today.weekday()  # 0=Lunedì, 6=Domenica
-    monday_of_week = today - timedelta(days=days_since_monday)
-    
-    # Assicura che il valore predefinito sia nel range valido
-    default_date = monday_of_week if min_date <= monday_of_week <= max_date else min_date
-        
-    selected_date = st.date_input(
-        "Seleziona data partite:",
-        value=default_date,
-        min_value=min_date,
-        max_value=max_date,
-        help="Filtra le partite da questa data in poi"
-    )
+selected_date = st.sidebar.date_input(
+    "Seleziona data partite:",
+    value=default_date,
+    min_value=min_date,
+    max_value=max_date,
+    help="Filtra le partite da questa data in poi"
+)
 
-with col2:
-    only_selected_date = st.checkbox(
-        "Solo questa data", 
-        value=False, 
-        help="Se selezionato mostra solo le partite di questa data, altrimenti da questa data in poi"
-    )
-    show_all = st.checkbox("Mostra tutte le date", value=False, help="Ignora il filtro data e mostra tutte le partite")
+only_selected_date = st.sidebar.checkbox(
+    "Solo questa data", 
+    value=False, 
+    help="Se selezionato mostra solo le partite di questa data, altrimenti da questa data in poi"
+)
+show_all = st.sidebar.checkbox("Mostra tutte le date", value=False, help="Ignora il filtro data e mostra tutte le partite")
 
-with col3:
-    # Filtro campionato
-    available_leagues = ['Tutti'] + sorted(df['Campionato'].dropna().unique().tolist())
-    selected_league = st.selectbox(
-        "Campionato:",
-        options=available_leagues,
-        index=0,
-        help="Filtra per campionato specifico"
-    )
-
-with col4:
-    st.write("")  # Spazio vuoto per allineamento
+# Filtro campionato
+available_leagues = ['Tutti'] + sorted(df['Campionato'].dropna().unique().tolist())
+selected_league = st.sidebar.selectbox(
+    "Campionato:",
+    options=available_leagues,
+    index=0,
+    help="Filtra per campionato specifico"
+)
 
 # Applica filtri data e campionato
 df_base = df.copy()
@@ -761,6 +755,7 @@ st.markdown("""
     📱 Ottimizzato per smartphone
 </div>
 """, unsafe_allow_html=True)
+
 
 
 

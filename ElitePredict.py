@@ -44,22 +44,69 @@ st.markdown("""
     }
     
     .metric-card {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        padding: 20px;
-        border-radius: 15px;
-        color: white;
-        text-align: center;
-        margin: 10px 0;
-        box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+    background: white;
+    padding: 25px;
+    border-radius: 16px;
+    color: #1e293b;
+    text-align: center;
+    margin: 10px 0;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    border: 1px solid #e2e8f0;
+    transition: transform 0.2s, box-shadow 0.2s;
+    }
+    
+    .metric-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 30px rgba(102, 126, 234, 0.15);
+    }
+    
+    .metric-card h3 {
+        color: #64748b;
+        font-size: 0.9rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 0.5rem;
+    }
+    
+    .metric-card h2 {
+        color: #667eea;
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin: 0.5rem 0;
+    }
+    
+    .metric-card p {
+        color: #94a3b8;
+        font-size: 0.85rem;
     }
     
     .prediction-card {
-        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-        padding: 20px;
-        border-radius: 15px;
-        color: white;
-        margin: 15px 0;
-        box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+    background: white;
+    padding: 25px;
+    border-radius: 16px;
+    border-left: 5px solid #667eea;
+    margin: 20px 0;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    transition: transform 0.2s, box-shadow 0.2s;
+    }
+    
+    .prediction-card:hover {
+        transform: translateX(5px);
+        box-shadow: 0 8px 30px rgba(102, 126, 234, 0.15);
+    }
+    
+    .prediction-card h3 {
+        color: #1e293b;
+        font-size: 1.3rem;
+        font-weight: 700;
+        margin-bottom: 0.8rem;
+    }
+    
+    .prediction-card p {
+        color: #64748b;
+        font-size: 0.95rem;
+        margin: 0.3rem 0;
     }
     
     .live-score {
@@ -74,27 +121,32 @@ st.markdown("""
     }
     
     .status-badge {
-        display: inline-block;
-        padding: 5px 12px;
-        border-radius: 20px;
-        font-size: 12px;
-        font-weight: bold;
-        margin: 5px 0;
+    display: inline-block;
+    padding: 8px 16px;
+    border-radius: 50px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    margin: 5px 5px 5px 0;
+    letter-spacing: 0.3px;
+    text-transform: uppercase;
     }
     
     .status-correct {
-        background-color: #28a745;
-        color: white;
+        background-color: #d1fae5;
+        color: #065f46;
+        border: 1px solid #6ee7b7;
     }
     
     .status-incorrect {
-        background-color: #dc3545;
-        color: white;
+        background-color: #fee2e2;
+        color: #991b1b;
+        border: 1px solid #fca5a5;
     }
     
     .status-pending {
-        background-color: #ffc107;
-        color: black;
+        background-color: #fef3c7;
+        color: #92400e;
+        border: 1px solid #fcd34d;
     }
     
     @media (max-width: 768px) {
@@ -103,9 +155,35 @@ st.markdown("""
             padding-right: 1rem;
         }
         
+        .stTabs [data-baseweb="tab-list"] {
+        gap: 12px;
+        background-color: #f8fafc;
+        padding: 8px;
+        border-radius: 12px;
+        }
+        
         .stTabs [data-baseweb="tab"] {
-            font-size: 14px;
-            padding: 0px 8px;
+            height: 55px;
+            padding: 0px 24px;
+            background-color: white;
+            border-radius: 10px;
+            color: #64748b;
+            font-size: 16px;
+            font-weight: 600;
+            border: 2px solid transparent;
+            transition: all 0.2s;
+        }
+        
+        .stTabs [data-baseweb="tab"]:hover {
+            background-color: #f1f5f9;
+            border-color: #cbd5e1;
+        }
+        
+        .stTabs [aria-selected="true"] {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+            color: white !important;
+            border-color: transparent !important;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
         }
     }
 </style>
@@ -257,8 +335,37 @@ if st.sidebar.button("🔧 Debug Info"):
         st.sidebar.write("**Valori 'Doppia chance':**")
         st.sidebar.write(df['Risultato predizione (doppia chance)'].value_counts())
 
-# Header
-st.markdown("# ⚽ Dashboard Predizioni Calcio")
+# Styling sidebar professionale
+st.sidebar.markdown("""
+<div style="
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    padding: 1.5rem 1rem;
+    border-radius: 15px;
+    margin-bottom: 1.5rem;
+    text-align: center;
+">
+    <h2 style="color: white; margin: 0; font-size: 1.5rem;">⚙️ Filters</h2>
+</div>
+""", unsafe_allow_html=True)
+
+# Header professionale con gradient e shadow
+st.markdown("""
+<div style="
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    padding: 2rem 1rem;
+    border-radius: 20px;
+    margin-bottom: 2rem;
+    box-shadow: 0 10px 40px rgba(102, 126, 234, 0.3);
+    text-align: center;
+">
+    <h1 style="color: white; margin: 0; font-size: 2.5rem; font-weight: 700; letter-spacing: -1px;">
+        ⚽ Football Predictions Dashboard
+    </h1>
+    <p style="color: rgba(255,255,255,0.9); margin-top: 0.5rem; font-size: 1.1rem;">
+        AI-Powered Match Analysis & Forecasting
+    </p>
+</div>
+""", unsafe_allow_html=True)
 
 # Filtri globali
 # Filtri nella sidebar
@@ -339,7 +446,13 @@ if not show_all:
 else:
     st.info(f"📅 Visualizzando tutte le partite{league_info} - {len(df_filtered)} partite totali")
     
-st.markdown("---")
+st.markdown("""
+<div style="
+    height: 2px;
+    background: linear-gradient(90deg, transparent, #e2e8f0, transparent);
+    margin: 2rem 0;
+"></div>
+""", unsafe_allow_html=True)
 
 # Tabs principali
 # Calcola il numero di partite da giocare per il badge
@@ -373,67 +486,265 @@ with tab1:
         wrong_exact = total_matches - correct_exact
         
         with col1:
-            st.markdown("""
-            <div class="metric-card">
-                <h3>🎯 Risultato Secco</h3>
-                <h2>{:.1f}%</h2>
-                <p>Accuratezza</p>
+            st.markdown(f"""
+            <div style="
+                background: white;
+                padding: 25px 20px;
+                border-radius: 16px;
+                box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+                border-top: 4px solid #667eea;
+                text-align: center;
+                transition: transform 0.2s, box-shadow 0.2s;
+            " onmouseover="this.style.transform='translateY(-5px)'; this.style.boxShadow='0 8px 30px rgba(102,126,234,0.15)';" 
+               onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 20px rgba(0,0,0,0.08)';">
+                <div style="
+                    color: #64748b;
+                    font-size: 0.85rem;
+                    font-weight: 600;
+                    text-transform: uppercase;
+                    letter-spacing: 0.5px;
+                    margin-bottom: 8px;
+                ">
+                    🎯 Risultato Secco
+                </div>
+                <div style="
+                    color: #667eea;
+                    font-size: 2.8rem;
+                    font-weight: 700;
+                    margin: 10px 0;
+                    line-height: 1;
+                ">
+                    {accuracy_exact:.1f}%
+                </div>
+                <div style="
+                    color: #94a3b8;
+                    font-size: 0.9rem;
+                    font-weight: 500;
+                ">
+                    Accuratezza
+                </div>
             </div>
-            """.format(accuracy_exact), unsafe_allow_html=True)
-        
+            """, unsafe_allow_html=True)
+                
         with col2:
-            st.markdown("""
-            <div class="metric-card" style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);">
-                <h3>✅ Corrette</h3>
-                <h2>{}</h2>
-                <p>predizioni</p>
+            st.markdown(f"""
+            <div style="
+                background: white;
+                padding: 25px 20px;
+                border-radius: 16px;
+                box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+                border-top: 4px solid #10b981;
+                text-align: center;
+                transition: transform 0.2s, box-shadow 0.2s;
+            " onmouseover="this.style.transform='translateY(-5px)'; this.style.boxShadow='0 8px 30px rgba(16,185,129,0.15)';" 
+               onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 20px rgba(0,0,0,0.08)';">
+                <div style="
+                    color: #64748b;
+                    font-size: 0.85rem;
+                    font-weight: 600;
+                    text-transform: uppercase;
+                    letter-spacing: 0.5px;
+                    margin-bottom: 8px;
+                ">
+                    ✅ Corrette
+                </div>
+                <div style="
+                    color: #10b981;
+                    font-size: 2.8rem;
+                    font-weight: 700;
+                    margin: 10px 0;
+                    line-height: 1;
+                ">
+                    {correct_exact}
+                </div>
+                <div style="
+                    color: #94a3b8;
+                    font-size: 0.9rem;
+                    font-weight: 500;
+                ">
+                    predizioni
+                </div>
             </div>
-            """.format(correct_exact), unsafe_allow_html=True)
+            """, unsafe_allow_html=True)
         
         with col3:
-            st.markdown("""
-            <div class="metric-card" style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);">
-                <h3>❌ Errate</h3>
-                <h2>{}</h2>
-                <p>predizioni</p>
+            st.markdown(f"""
+            <div style="
+                background: white;
+                padding: 25px 20px;
+                border-radius: 16px;
+                box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+                border-top: 4px solid #ef4444;
+                text-align: center;
+                transition: transform 0.2s, box-shadow 0.2s;
+            " onmouseover="this.style.transform='translateY(-5px)'; this.style.boxShadow='0 8px 30px rgba(239,68,68,0.15)';" 
+               onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 20px rgba(0,0,0,0.08)';">
+                <div style="
+                    color: #64748b;
+                    font-size: 0.85rem;
+                    font-weight: 600;
+                    text-transform: uppercase;
+                    letter-spacing: 0.5px;
+                    margin-bottom: 8px;
+                ">
+                    ❌ Errate
+                </div>
+                <div style="
+                    color: #ef4444;
+                    font-size: 2.8rem;
+                    font-weight: 700;
+                    margin: 10px 0;
+                    line-height: 1;
+                ">
+                    {wrong_exact}
+                </div>
+                <div style="
+                    color: #94a3b8;
+                    font-size: 0.9rem;
+                    font-weight: 500;
+                ">
+                    predizioni
+                </div>
             </div>
-            """.format(wrong_exact), unsafe_allow_html=True)
+            """, unsafe_allow_html=True)
         
         # Seconda riga - Doppia Chance
         col1, col2, col3 = st.columns(3)
         
         correct_double = len(completed_filtered[completed_filtered['Risultato predizione (doppia chance)'] == 'Corretto'])
-        accuracy_double = (correct_double / total_matches) * 100
+        accuracy_double = (correct_double / total_matches) * 100 if total_matches > 0 else 0
         wrong_double = total_matches - correct_double
         
         with col1:
-            st.markdown("""
-            <div class="metric-card" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
-                <h3>🎲 Doppia Chance</h3>
-                <h2>{:.1f}%</h2>
-                <p>Accuratezza</p>
+            st.markdown(f"""
+            <div style="
+                background: white;
+                padding: 25px 20px;
+                border-radius: 16px;
+                box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+                border-top: 4px solid #3b82f6;
+                text-align: center;
+                transition: transform 0.2s, box-shadow 0.2s;
+            " onmouseover="this.style.transform='translateY(-5px)'; this.style.boxShadow='0 8px 30px rgba(59,130,246,0.15)';" 
+               onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 20px rgba(0,0,0,0.08)';">
+                <div style="
+                    color: #64748b;
+                    font-size: 0.85rem;
+                    font-weight: 600;
+                    text-transform: uppercase;
+                    letter-spacing: 0.5px;
+                    margin-bottom: 8px;
+                ">
+                    🎲 Doppia Chance
+                </div>
+                <div style="
+                    color: #3b82f6;
+                    font-size: 2.8rem;
+                    font-weight: 700;
+                    margin: 10px 0;
+                    line-height: 1;
+                ">
+                    {accuracy_double:.1f}%
+                </div>
+                <div style="
+                    color: #94a3b8;
+                    font-size: 0.9rem;
+                    font-weight: 500;
+                ">
+                    Accuratezza
+                </div>
             </div>
-            """.format(accuracy_double), unsafe_allow_html=True)
+            """, unsafe_allow_html=True)
         
         with col2:
-            st.markdown("""
-            <div class="metric-card" style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);">
-                <h3>✅ Corrette</h3>
-                <h2>{}</h2>
-                <p>predizioni</p>
+            st.markdown(f"""
+            <div style="
+                background: white;
+                padding: 25px 20px;
+                border-radius: 16px;
+                box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+                border-top: 4px solid #10b981;
+                text-align: center;
+                transition: transform 0.2s, box-shadow 0.2s;
+            " onmouseover="this.style.transform='translateY(-5px)'; this.style.boxShadow='0 8px 30px rgba(16,185,129,0.15)';" 
+               onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 20px rgba(0,0,0,0.08)';">
+                <div style="
+                    color: #64748b;
+                    font-size: 0.85rem;
+                    font-weight: 600;
+                    text-transform: uppercase;
+                    letter-spacing: 0.5px;
+                    margin-bottom: 8px;
+                ">
+                    ✅ Corrette
+                </div>
+                <div style="
+                    color: #10b981;
+                    font-size: 2.8rem;
+                    font-weight: 700;
+                    margin: 10px 0;
+                    line-height: 1;
+                ">
+                    {correct_double}
+                </div>
+                <div style="
+                    color: #94a3b8;
+                    font-size: 0.9rem;
+                    font-weight: 500;
+                ">
+                    predizioni
+                </div>
             </div>
-            """.format(correct_double), unsafe_allow_html=True)
+            """, unsafe_allow_html=True)
         
         with col3:
-            st.markdown("""
-            <div class="metric-card" style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);">
-                <h3>❌ Errate</h3>
-                <h2>{}</h2>
-                <p>predizioni</p>
+            st.markdown(f"""
+            <div style="
+                background: white;
+                padding: 25px 20px;
+                border-radius: 16px;
+                box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+                border-top: 4px solid #ef4444;
+                text-align: center;
+                transition: transform 0.2s, box-shadow 0.2s;
+            " onmouseover="this.style.transform='translateY(-5px)'; this.style.boxShadow='0 8px 30px rgba(239,68,68,0.15)';" 
+               onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 20px rgba(0,0,0,0.08)';">
+                <div style="
+                    color: #64748b;
+                    font-size: 0.85rem;
+                    font-weight: 600;
+                    text-transform: uppercase;
+                    letter-spacing: 0.5px;
+                    margin-bottom: 8px;
+                ">
+                    ❌ Errate
+                </div>
+                <div style="
+                    color: #ef4444;
+                    font-size: 2.8rem;
+                    font-weight: 700;
+                    margin: 10px 0;
+                    line-height: 1;
+                ">
+                    {wrong_double}
+                </div>
+                <div style="
+                    color: #94a3b8;
+                    font-size: 0.9rem;
+                    font-weight: 500;
+                ">
+                    predizioni
+                </div>
             </div>
-            """.format(wrong_double), unsafe_allow_html=True)
+            """, unsafe_allow_html=True)
         
-        st.markdown("---")
+        st.markdown("""
+        <div style="
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #e2e8f0, transparent);
+            margin: 2rem 0;
+        "></div>
+        """, unsafe_allow_html=True)
         
         # Statistiche per campionato
         st.markdown("### 🏆 Performance per Campionato")
@@ -459,7 +770,13 @@ with tab1:
         
         st.dataframe(league_stats, use_container_width=True)
         
-        st.markdown("---")
+        st.markdown("""
+        <div style="
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #e2e8f0, transparent);
+            margin: 2rem 0;
+        "></div>
+        """, unsafe_allow_html=True)
         
         # Statistiche per Status Merged
         st.markdown("### ⚖️ Performance per Tipo Sfida")
@@ -530,8 +847,38 @@ with tab1:
                 fig.update_layout(height=400)
                 st.plotly_chart(fig, use_container_width=True)
         
-        st.markdown("---")
-        
+        st.markdown("""
+        <div style="
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #e2e8f0, transparent);
+            margin: 2rem 0;
+        "></div>
+        """, unsafe_allow_html=True)
+
+        # Styling tabella
+        st.markdown("""
+        <style>
+            .dataframe {
+                font-size: 0.9rem;
+                border-radius: 12px;
+                overflow: hidden;
+            }
+            .dataframe th {
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                color: white;
+                font-weight: 600;
+                padding: 12px;
+            }
+            .dataframe td {
+                padding: 10px;
+                border-bottom: 1px solid #e2e8f0;
+            }
+            .dataframe tr:hover {
+                background-color: #f8fafc;
+            }
+        </style>
+        """, unsafe_allow_html=True)
+
         # Grafico confidence
         st.markdown("### 💪 Performance per Livello Confidence")
         
@@ -570,7 +917,13 @@ with tab1:
         
         st.plotly_chart(fig, use_container_width=True)
         
-        st.markdown("---")
+        st.markdown("""
+        <div style="
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #e2e8f0, transparent);
+            margin: 2rem 0;
+        "></div>
+        """, unsafe_allow_html=True)
         
         # Trend temporale
         st.markdown("### 📈 Trend Accuratezza nel Tempo")
@@ -724,7 +1077,13 @@ with tab2:
                 <div class="status-badge {double_class}">Doppia: {double_status}</div>
                 """, unsafe_allow_html=True)
             
-            st.markdown("---")
+            st.markdown("""
+            <div style="
+                height: 2px;
+                background: linear-gradient(90deg, transparent, #e2e8f0, transparent);
+                margin: 2rem 0;
+            "></div>
+            """, unsafe_allow_html=True)
     
     else:
         st.info("📊 Nessuna partita completata ancora. Le statistiche appariranno qui una volta terminate le prime partite.")
@@ -770,19 +1129,32 @@ with tab3:
                     st.markdown(f"**{match['Confidence']}**")
                 
                 # Spazio tra le partite
-                st.markdown("---")
-    
+                st.markdown("""
+                <div style="
+                    height: 2px;
+                    background: linear-gradient(90deg, transparent, #e2e8f0, transparent);
+                    margin: 2rem 0;
+                "></div>
+                """, unsafe_allow_html=True)
+                    
     else:
         st.info("🎮 Nessuna partita in programma al momento. Le prossime predizioni appariranno qui.")
 
 # Footer
-st.markdown("---")
+st.markdown("""
+<div style="
+    height: 2px;
+    background: linear-gradient(90deg, transparent, #e2e8f0, transparent);
+    margin: 2rem 0;
+"></div>
+""", unsafe_allow_html=True)
 st.markdown("""
 <div style="text-align: center; color: #666; padding: 20px;">
     ⚽ Dashboard Predizioni Calcio | Aggiornato automaticamente<br>
     📱 Ottimizzato per smartphone
 </div>
 """, unsafe_allow_html=True)
+
 
 
 

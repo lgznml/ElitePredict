@@ -360,45 +360,108 @@ with tab1:
     # Nuova sezione Statistiche
     st.markdown("## 📊 Statistiche Generali")
     
-    # Filtra tutte le partite completate (ignorando i filtri data per avere statistiche globali)
-    all_completed = df[
-        (df['Risultato predizione (risultato secco)'] != 'Da giocare') &
-        (df['Risultato predizione (doppia chance)'] != 'Da giocare')
+    # Usa df_filtered per rispettare i filtri data e campionato
+    completed_filtered = df_filtered[
+        (df_filtered['Risultato predizione (risultato secco)'] != 'Da giocare') &
+        (df_filtered['Risultato predizione (doppia chance)'] != 'Da giocare')
     ]
     
-    if len(all_completed) > 0:
-        # KPI principali
+    if len(completed_filtered) > 0:
+        # KPI principali - 2 righe con 3 colonne ciascuna
+        st.markdown("### 📈 Metriche Principali")
+        
+        # Prima riga - Risultato Secco
         col1, col2, col3 = st.columns(3)
         
+        total_matches = len(completed_filtered)
+        correct_exact = len(completed_filtered[completed_filtered['Risultato predizione (risultato secco)'] == 'Corretto'])
+        accuracy_exact = (correct_exact / total_matches) * 100
+        wrong_exact = total_matches - correct_exact
+        
         with col1:
-            total_matches = len(all_completed)
-            st.metric("🎮 Partite Analizzate", total_matches)
+            st.markdown("""
+            <div class="metric-card">
+                <h3>🎯 Risultato Secco</h3>
+                <h2>{:.1f}%</h2>
+                <p>Accuratezza</p>
+            </div>
+            """.format(accuracy_exact), unsafe_allow_html=True)
         
         with col2:
-            correct_exact = len(all_completed[all_completed['Risultato predizione (risultato secco)'] == 'Corretto'])
-            accuracy_exact = (correct_exact / total_matches) * 100
-            st.metric("🎯 Accuratezza Secco", f"{accuracy_exact:.1f}%")
+            st.markdown("""
+            <div class="metric-card" style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);">
+                <h3>✅ Corrette</h3>
+                <h2>{}</h2>
+                <p>predizioni</p>
+            </div>
+            """.format(correct_exact), unsafe_allow_html=True)
         
         with col3:
-            correct_double = len(all_completed[all_completed['Risultato predizione (doppia chance)'] == 'Corretto'])
-            accuracy_double = (correct_double / total_matches) * 100
-            st.metric("🎲 Accuratezza Doppia", f"{accuracy_double:.1f}%")
+            st.markdown("""
+            <div class="metric-card" style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);">
+                <h3>❌ Errate</h3>
+                <h2>{}</h2>
+                <p>predizioni</p>
+            </div>
+            """.format(wrong_exact), unsafe_allow_html=True)
+        
+        # Seconda riga - Doppia Chance
+        col1, col2, col3 = st.columns(3)
+        
+        correct_double = len(completed_filtered[completed_filtered['Risultato predizione (doppia chance)'] == 'Corretto'])
+        accuracy_double = (correct_double / total_matches) * 100
+        wrong_double = total_matches - correct_double
+        
+        with col1:
+            st.markdown("""
+            <div class="metric-card" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
+                <h3>🎲 Doppia Chance</h3>
+                <h2>{:.1f}%</h2>
+                <p>Accuratezza</p>
+            </div>
+            """.format(accuracy_double), unsafe_allow_html=True)
+        
+        with col2:
+            st.markdown("""
+            <div class="metric-card" style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);">
+                <h3>✅ Corrette</h3>
+                <h2>{}</h2>
+                <p>predizioni</p>
+            </div>
+            """.format(correct_double), unsafe_allow_html=True)
+        
+        with col3:
+            st.markdown("""
+            <div class="metric-card" style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);">
+                <h3>❌ Errate</h3>
+                <h2>{}</h2>
+                <p>predizioni</p>
+            </div>
+            """.format(wrong_double), unsafe_allow_html=True)
         
         st.markdown("---")
         
         # Statistiche per campionato
         st.markdown("### 🏆 Performance per Campionato")
         
-        league_stats = all_completed.groupby('Campionato').agg({
+        league_stats_exact = completed_filtered.groupby('Campionato').agg({
             'Risultato predizione (risultato secco)': [
                 ('Totale', 'count'),
-                ('Corrette', lambda x: (x == 'Corretto').sum()),
-                ('Accuratezza %', lambda x: (x == 'Corretto').sum() / len(x) * 100)
+                ('Corrette Secco', lambda x: (x == 'Corretto').sum()),
+                ('Accuratezza Secco %', lambda x: (x == 'Corretto').sum() / len(x) * 100)
             ]
         }).round(1)
         
-        league_stats.columns = ['Totale Partite', 'Predizioni Corrette', 'Accuratezza %']
-        league_stats = league_stats.sort_values('Accuratezza %', ascending=False)
+        league_stats_double = completed_filtered.groupby('Campionato').agg({
+            'Risultato predizione (doppia chance)': [
+                ('Corrette Doppia', lambda x: (x == 'Corretto').sum()),
+                ('Accuratezza Doppia %', lambda x: (x == 'Corretto').sum() / len(x) * 100)
+            ]
+        }).round(1)
+        
+        league_stats = pd.concat([league_stats_exact, league_stats_double], axis=1)
+        league_stats.columns = ['Totale Partite', 'Corrette Secco', 'Accuratezza Secco %', 'Corrette Doppia', 'Accuratezza Doppia %']
+        league_stats = league_stats.sort_values('Accuratezza Secco %', ascending=False)
         
         st.dataframe(league_stats, use_container_width=True)
         
@@ -410,13 +473,13 @@ with tab1:
         col1, col2 = st.columns(2)
         
         with col1:
-            if 'Status Merged' in all_completed.columns:
-                status_stats = all_completed.groupby('Status Merged').agg({
+            if 'Status Merged' in completed_filtered.columns:
+                status_stats_exact = completed_filtered.groupby('Status Merged').agg({
                     'Risultato predizione (risultato secco)': lambda x: (x == 'Corretto').sum() / len(x) * 100
-                }).round(1)
+                }).round(1).reset_index()
                 
                 fig = px.bar(
-                    status_stats.reset_index(),
+                    status_stats_exact,
                     x='Status Merged',
                     y='Risultato predizione (risultato secco)',
                     title='Accuratezza per Tipo Sfida (Risultato Secco)',
@@ -428,35 +491,70 @@ with tab1:
                 st.plotly_chart(fig, use_container_width=True)
         
         with col2:
-            # Grafico confidence
-            confidence_stats = all_completed.groupby('Confidence').agg({
-                'Risultato predizione (risultato secco)': lambda x: (x == 'Corretto').sum() / len(x) * 100
-            }).round(1).reset_index()
-            
-            # Ordina per livello di confidence
-            confidence_order = {'Bassa': 0, 'Media': 1, 'Alta': 2}
-            confidence_stats['order'] = confidence_stats['Confidence'].map(confidence_order)
-            confidence_stats = confidence_stats.sort_values('order').drop('order', axis=1)
-            
-            fig = px.bar(
-                confidence_stats,
-                x='Confidence',
-                y='Risultato predizione (risultato secco)',
-                title='Accuratezza per Livello Confidence',
-                labels={'Risultato predizione (risultato secco)': 'Accuratezza %'},
-                color='Risultato predizione (risultato secco)',
-                color_continuous_scale='Blues'
-            )
-            fig.update_layout(height=400)
-            st.plotly_chart(fig, use_container_width=True)
+            if 'Status Merged' in completed_filtered.columns:
+                status_stats_double = completed_filtered.groupby('Status Merged').agg({
+                    'Risultato predizione (doppia chance)': lambda x: (x == 'Corretto').sum() / len(x) * 100
+                }).round(1).reset_index()
+                
+                fig = px.bar(
+                    status_stats_double,
+                    x='Status Merged',
+                    y='Risultato predizione (doppia chance)',
+                    title='Accuratezza per Tipo Sfida (Doppia Chance)',
+                    labels={'Risultato predizione (doppia chance)': 'Accuratezza %', 'Status Merged': 'Tipo Sfida'},
+                    color='Risultato predizione (doppia chance)',
+                    color_continuous_scale='Blues'
+                )
+                fig.update_layout(height=400)
+                st.plotly_chart(fig, use_container_width=True)
+        
+        st.markdown("---")
+        
+        # Grafico confidence
+        st.markdown("### 💪 Performance per Livello Confidence")
+        
+        confidence_stats = completed_filtered.groupby('Confidence').agg({
+            'Risultato predizione (risultato secco)': lambda x: (x == 'Corretto').sum() / len(x) * 100,
+            'Risultato predizione (doppia chance)': lambda x: (x == 'Corretto').sum() / len(x) * 100
+        }).round(1).reset_index()
+        
+        # Ordina per livello di confidence
+        confidence_order = {'Bassa': 0, 'Media': 1, 'Alta': 2}
+        confidence_stats['order'] = confidence_stats['Confidence'].map(confidence_order)
+        confidence_stats = confidence_stats.sort_values('order').drop('order', axis=1)
+        
+        fig = go.Figure()
+        fig.add_trace(go.Bar(
+            name='Risultato Secco',
+            x=confidence_stats['Confidence'],
+            y=confidence_stats['Risultato predizione (risultato secco)'],
+            marker_color='#ff6b35'
+        ))
+        fig.add_trace(go.Bar(
+            name='Doppia Chance',
+            x=confidence_stats['Confidence'],
+            y=confidence_stats['Risultato predizione (doppia chance)'],
+            marker_color='#4facfe'
+        ))
+        
+        fig.update_layout(
+            title='Accuratezza per Livello Confidence',
+            xaxis_title='Livello Confidence',
+            yaxis_title='Accuratezza (%)',
+            barmode='group',
+            height=400,
+            showlegend=True
+        )
+        
+        st.plotly_chart(fig, use_container_width=True)
         
         st.markdown("---")
         
         # Trend temporale
         st.markdown("### 📈 Trend Accuratezza nel Tempo")
         
-        if 'Data partita' in all_completed.columns:
-            weekly_stats = all_completed.copy()
+        if 'Data partita' in completed_filtered.columns:
+            weekly_stats = completed_filtered.copy()
             weekly_stats['Settimana'] = pd.to_datetime(weekly_stats['Data partita']).dt.to_period('W').astype(str)
             
             weekly_accuracy = weekly_stats.groupby('Settimana').agg({
@@ -489,39 +587,9 @@ with tab1:
             )
             
             st.plotly_chart(fig, use_container_width=True)
-        
-        st.markdown("---")
-        
-        # Top e Flop Confidence
-        col1, col2 = st.columns(2)
-        
-        with col1:
-            st.markdown("### ✅ Migliori Performance (Alta Confidence)")
-            high_conf_correct = all_completed[
-                (all_completed['Confidence'] == 'Alta') &
-                (all_completed['Risultato predizione (risultato secco)'] == 'Corretto')
-            ][['Squadra casa', 'Squadra ospite', 'Campionato', 'Risultato secco previsto', 'Risultato secco reale']].head(10)
-            
-            if len(high_conf_correct) > 0:
-                st.dataframe(high_conf_correct, use_container_width=True, hide_index=True)
-            else:
-                st.info("Nessuna predizione corretta con alta confidence")
-        
-        with col2:
-            st.markdown("### ❌ Da Migliorare (Alta Confidence Errate)")
-            high_conf_wrong = all_completed[
-                (all_completed['Confidence'] == 'Alta') &
-                (all_completed['Risultato predizione (risultato secco)'] == 'Errato')
-            ][['Squadra casa', 'Squadra ospite', 'Campionato', 'Risultato secco previsto', 'Risultato secco reale']].head(10)
-            
-            if len(high_conf_wrong) > 0:
-                st.dataframe(high_conf_wrong, use_container_width=True, hide_index=True)
-            else:
-                st.success("Nessuna predizione errata con alta confidence!")
     
     else:
-        st.info("📊 Nessun dato disponibile per generare statistiche. Completa alcune predizioni per vedere le statistiche.")
-
+        st.info("📊 Nessun dato disponibile per generare statistiche con i filtri selezionati. Prova a modificare i filtri o attiva 'Mostra tutte le date'.")
 with tab2:
     # Genera il testo dinamico basato sui filtri applicati
     if show_all:
@@ -693,6 +761,7 @@ st.markdown("""
     📱 Ottimizzato per smartphone
 </div>
 """, unsafe_allow_html=True)
+
 
 
 

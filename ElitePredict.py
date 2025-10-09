@@ -1162,7 +1162,7 @@ with tab4:
                 </p>
             </div>
             <div style="background: #f8fafc; padding: 20px; border-radius: 12px; border-left: 4px solid #10b981;">
-                <div style="font-size: 2.5rem; margin-bottom: 10px;">🤖</div>
+                <div style="font-size: 2.5rem; margin-bottom: 10px;">&#129302</div>
                 <h3 style="color: #1e293b; font-size: 1.1rem; margin-bottom: 10px;">3. Predizione AI</h3>
                 <p style="color: #64748b; font-size: 0.9rem; line-height: 1.6;">
                     GPT-4o-mini analizza tutti i dati raccolti e genera predizioni con percentuali di probabilità e livelli di confidence
@@ -1259,7 +1259,7 @@ with tab4:
                 <p style="color: #64748b; font-size: 0.8rem; margin-top: 5px;">Scraping partite</p>
             </div>
             <div style="text-align: center; padding: 15px;">
-                <div style="font-size: 2.5rem; margin-bottom: 10px;">🤖</div>
+                <div style="font-size: 2.5rem; margin-bottom: 10px;">&#129302</div>
                 <strong style="color: #1e293b;">GPT-4o-mini</strong>
                 <p style="color: #64748b; font-size: 0.8rem; margin-top: 5px;">Analisi AI</p>
             </div>
@@ -1317,4 +1317,5 @@ st.markdown("""
     📱 Il sistema che genera le predizioni è stato sviluppato in n8n
 </div>
 """, unsafe_allow_html=True)
+
 

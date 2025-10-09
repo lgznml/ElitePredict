@@ -448,7 +448,7 @@ upcoming_count = len(df_filtered[
     (df_filtered['Risultato predizione (doppia chance)'] == 'Da giocare')
 ])
 
-tab1, tab2, tab3, tab4 = st.tabs(["📊 Statistiche", "📋 Storico Predizioni", f"🔴 Predizioni Future ({upcoming_count})", "🤖 Come Funzionano"])
+tab1, tab2, tab3, tab4 = st.tabs(["📊 Statistiche", "📋 Storico Predizioni", f"🔴 Predizioni Future ({upcoming_count})", "🤖 Come Funzionano le predizioni"])
 
 with tab1:
     # Nuova sezione Statistiche
@@ -1317,5 +1317,6 @@ st.markdown("""
     📱 Il sistema che genera le predizioni è stato sviluppato in n8n
 </div>
 """, unsafe_allow_html=True)
+
 
 

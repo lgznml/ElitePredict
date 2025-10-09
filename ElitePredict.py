@@ -451,15 +451,15 @@ upcoming_count = len(df_filtered[
 tab1, tab2, tab3, tab4 = st.tabs(["📊 Statistiche", "📋 Storico Predizioni", f"🔴 Predizioni Future ({upcoming_count})", "🤖 Come Funzionano Le Predizioni"])
 
 with tab1:
+    # Genera il testo dinamico basato sui filtri applicati
     if show_all:
         title_date_info = ""
     elif only_selected_date:
         title_date_info = f" del {selected_date.strftime('%d/%m/%Y')}"
     else:
         title_date_info = f" dal {selected_date.strftime('%d/%m/%Y')}"
-    
-    # Nuova sezione Statistiche
-    st.markdown("## 📊 Statistiche Generali{title_date_info}")
+
+    st.markdown(f"## 📊 Statistiche Generali{title_date_info}")
     
     # Usa df_filtered per rispettare i filtri data e campionato
     completed_filtered = df_filtered[
@@ -1324,6 +1324,7 @@ st.markdown("""
     📱 Il sistema che genera le predizioni è stato sviluppato in n8n
 </div>
 """, unsafe_allow_html=True)
+
 
 
 

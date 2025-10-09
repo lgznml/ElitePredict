@@ -25,12 +25,9 @@
 - [Configuration](#configuration)
 - [Usage](#usage)
 - [Data Flow](#data-flow)
-- [Screenshots](#screenshots)
 - [Performance Metrics](#performance-metrics)
 - [Future Enhancements](#future-enhancements)
-- [Contributing](#contributing)
 - [License](#license)
-- [Contact](#contact)
 
 ---
 

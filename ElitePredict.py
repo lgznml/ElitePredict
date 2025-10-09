@@ -1141,4 +1141,3 @@ st.markdown("""
     📱 Il sistema che genera le predizioni è stato sviluppato in n8n
 </div>
 """, unsafe_allow_html=True)
-

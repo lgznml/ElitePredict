@@ -111,35 +111,35 @@ The **Football Predictions Dashboard** is a sophisticated, production-ready web 
 ```
 ┌─────────────────────────────────────────────────────────────┐
 │                     User Interface (Streamlit)              │
-│  ┌─────────────┐  ┌─────────────┐  ┌─────────────────────┐ │
-│  │ Statistics  │  │  Historical │  │  Live Predictions   │ │
-│  │   Module    │  │  Tracking   │  │     Dashboard       │ │
-│  └─────────────┘  └─────────────┘  └─────────────────────┘ │
+│  ┌─────────────┐  ┌─────────────┐  ┌─────────────────────┐  │
+│  │ Statistics  │  │  Historical │  │  Live Predictions   │  │
+│  │   Module    │  │  Tracking   │  │     Dashboard       │  │
+│  └─────────────┘  └─────────────┘  └─────────────────────┘  │
 └────────────────────────┬────────────────────────────────────┘
                          │
                          ▼
 ┌─────────────────────────────────────────────────────────────┐
-│                   Data Processing Layer                      │
-│  ┌────────────┐  ┌─────────────┐  ┌────────────────────┐   │
-│  │  Filtering │  │ Aggregation │  │  Statistical       │   │
-│  │   Engine   │  │   Module    │  │  Calculations      │   │
-│  └────────────┘  └─────────────┘  └────────────────────┘   │
+│                   Data Processing Layer                     │
+│  ┌────────────┐  ┌─────────────┐  ┌────────────────────┐    │
+│  │  Filtering │  │ Aggregation │  │  Statistical       │    │
+│  │   Engine   │  │   Module    │  │  Calculations      │    │
+│  └────────────┘  └─────────────┘  └────────────────────┘    │
 └────────────────────────┬────────────────────────────────────┘
                          │
                          ▼
 ┌─────────────────────────────────────────────────────────────┐
-│                    Data Integration Layer                    │
-│  ┌──────────────────┐         ┌───────────────────────┐    │
-│  │  Google Sheets   │ ◄─────► │   Cache Manager       │    │
-│  │    Connector     │         │   (5-min TTL)         │    │
-│  └──────────────────┘         └───────────────────────┘    │
+│                    Data Integration Layer                   │
+│  ┌──────────────────┐         ┌───────────────────────┐     │
+│  │  Google Sheets   │ ◄─────► │   Cache Manager       │     │
+│  │    Connector     │         │   (5-min TTL)         │     │
+│  └──────────────────┘         └───────────────────────┘     │
 └────────────────────────┬────────────────────────────────────┘
                          │
                          ▼
 ┌─────────────────────────────────────────────────────────────┐
-│                   External Data Source                       │
-│               (Google Sheets - Live Data)                    │
-│                   Generated by n8n                           │
+│                   External Data Source                      │
+│               (Google Sheets - Live Data)                   │
+│                   Generated by n8n                          │
 └─────────────────────────────────────────────────────────────┘
 ```
 
@@ -290,7 +290,7 @@ The dashboard features three main tabs:
 ```
 n8n Automation Engine
         ↓
-    (Generates Predictions)
+(Generates Predictions)
         ↓
 Google Sheets Database
         ↓
@@ -304,7 +304,7 @@ Statistical Analysis Engine
         ↓
 Visualization Components
         ↓
-User Interface
+  User Interface
 ```
 
 ### **Data Update Cycle**
@@ -315,12 +315,6 @@ User Interface
 4. **Data is processed** and cached for performance
 5. **UI updates automatically** when new data is available
 6. **Real-time calculations** update all statistics and charts
-
----
-
-## 📸 Screenshots
-
-*Coming Soon: Screenshots of the dashboard in action*
 
 ---
 
@@ -344,14 +338,11 @@ User Interface
 
 ### **Planned Features**
 
-- [ ] **Machine Learning Integration**: Direct ML model training and evaluation
 - [ ] **Real-time Match Tracking**: Live score integration with prediction comparison
 - [ ] **Advanced Analytics**: 
   - Betting ROI calculator
   - Value bet identifier
   - Odds comparison integration
-- [ ] **User Authentication**: Personal dashboard and custom prediction lists
-- [ ] **API Development**: RESTful API for external integrations
 - [ ] **Mobile App**: Native iOS and Android applications
 - [ ] **Social Features**: Community predictions and leaderboards
 - [ ] **Export Options**: PDF reports and CSV downloads
@@ -369,10 +360,6 @@ User Interface
 - [ ] Automated backup system
 
 ---
-
-## 🤝 Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request. For major changes, please open an issue first to discuss what you would like to change.
 
 ### **Development Setup**
 
@@ -396,33 +383,9 @@ git push origin feature/AmazingFeature
 
 ## 📄 License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the MIT License
 
 ---
-
-## 📧 Contact
-
-**Your Name**
-- Email: your.email@example.com
-- LinkedIn: [Your LinkedIn Profile](https://linkedin.com/in/yourprofile)
-- GitHub: [@yourusername](https://github.com/yourusername)
-- Portfolio: [yourportfolio.com](https://yourportfolio.com)
-
-**Project Link**: [https://github.com/yourusername/football-predictions-dashboard](https://github.com/yourusername/football-predictions-dashboard)
-
----
-
-## 🙏 Acknowledgments
-
-- **n8n Community**: For the excellent automation platform
-- **Streamlit Team**: For the amazing Python web framework
-- **Plotly**: For powerful visualization capabilities
-- **Open Source Community**: For invaluable tools and libraries
-
----
-
-<div align="center">
-
 **⭐ If you found this project useful, please consider giving it a star on GitHub! ⭐**
 
 Made with ❤️ and ⚽ by [Your Name]

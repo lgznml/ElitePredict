@@ -448,7 +448,7 @@ upcoming_count = len(df_filtered[
     (df_filtered['Risultato predizione (doppia chance)'] == 'Da giocare')
 ])
 
-tab1, tab2, tab3 = st.tabs(["📊 Statistiche", "📋 Storico Predizioni", f"🔴 Predizioni Future ({upcoming_count})"])
+tab1, tab2, tab3, tab4 = st.tabs(["📊 Statistiche", "📋 Storico Predizioni", f"🔴 Predizioni Future ({upcoming_count})", "🤖 Come Funzionano le Predizioni"])
 
 with tab1:
     # Nuova sezione Statistiche
@@ -1127,6 +1127,316 @@ with tab3:
     else:
         st.info("🎮 Nessuna partita in programma al momento. Le prossime predizioni appariranno qui.")
 
+with st.tabs(["📊 Statistiche", "📋 Storico Predizioni", f"🔴 Predizioni Future ({upcoming_count})", "🤖 Come Funzionano le Predizioni"])[3]:
+    st.markdown("## 🤖 Sistema di Predizione AI")
+    
+    st.markdown("""
+    <div style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        padding: 2rem;
+        border-radius: 20px;
+        margin-bottom: 2rem;
+        color: white;
+        box-shadow: 0 10px 40px rgba(102, 126, 234, 0.3);
+    ">
+        <h2 style="margin: 0; font-size: 1.8rem;">🎯 Metodologia di Analisi</h2>
+        <p style="margin-top: 1rem; font-size: 1.1rem; opacity: 0.95;">
+            Le nostre predizioni sono generate da un sistema AI avanzato che combina analisi statistica, 
+            machine learning e informazioni contestuali in tempo reale.
+        </p>
+    </div>
+    """, unsafe_allow_html=True)
+    
+    # Sezione 1: Pipeline di Analisi
+    st.markdown("### 🔄 Pipeline di Analisi")
+    
+    col1, col2, col3 = st.columns(3)
+    
+    with col1:
+        st.markdown("""
+        <div style="
+            background: white;
+            padding: 25px;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            border-top: 4px solid #667eea;
+            text-align: center;
+            height: 100%;
+        ">
+            <div style="font-size: 3rem; margin-bottom: 15px;">📊</div>
+            <h3 style="color: #1e293b; font-size: 1.2rem; margin-bottom: 10px;">1. Raccolta Dati</h3>
+            <p style="color: #64748b; font-size: 0.9rem; line-height: 1.6;">
+                Estrazione automatica delle partite da Sky Sport per tutti i principali campionati europei
+            </p>
+        </div>
+        """, unsafe_allow_html=True)
+    
+    with col2:
+        st.markdown("""
+        <div style="
+            background: white;
+            padding: 25px;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            border-top: 4px solid #3b82f6;
+            text-align: center;
+            height: 100%;
+        ">
+            <div style="font-size: 3rem; margin-bottom: 15px;">🔍</div>
+            <h3 style="color: #1e293b; font-size: 1.2rem; margin-bottom: 10px;">2. Analisi Statistica</h3>
+            <p style="color: #64748b; font-size: 0.9rem; line-height: 1.6;">
+                Recupero statistiche avanzate (xG, xGA, xPTS) e storico partite recenti per entrambe le squadre
+            </p>
+        </div>
+        """, unsafe_allow_html=True)
+    
+    with col3:
+        st.markdown("""
+        <div style="
+            background: white;
+            padding: 25px;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            border-top: 4px solid #10b981;
+            text-align: center;
+            height: 100%;
+        ">
+            <div style="font-size: 3rem; margin-bottom: 15px;">🤖</div>
+            <h3 style="color: #1e293b; font-size: 1.2rem; margin-bottom: 10px;">3. AI Analysis</h3>
+            <p style="color: #64748b; font-size: 0.9rem; line-height: 1.6;">
+                GPT-4o-mini elabora tutti i dati e genera predizioni con livelli di confidence
+            </p>
+        </div>
+        """, unsafe_allow_html=True)
+    
+    st.markdown("""
+    <div style="
+        height: 2px;
+        background: linear-gradient(90deg, transparent, #e2e8f0, transparent);
+        margin: 2rem 0;
+    "></div>
+    """, unsafe_allow_html=True)
+    
+    # Sezione 2: Statistiche Utilizzate
+    st.markdown("### 📈 Statistiche Chiave Analizzate")
+    
+    st.markdown("""
+    <div style="background: #f8fafc; padding: 25px; border-radius: 16px; margin: 20px 0;">
+        <h4 style="color: #1e293b; margin-bottom: 15px;">🎯 Expected Goals (xG)</h4>
+        <p style="color: #64748b; line-height: 1.8; margin-bottom: 10px;">
+            Misura la <strong>qualità delle occasioni create</strong> da una squadra. Un xG alto con pochi gol segnati 
+            indica sfortuna in fase realizzativa e probabile miglioramento futuro.
+        </p>
+        <div style="background: white; padding: 15px; border-radius: 8px; border-left: 4px solid #667eea;">
+            <strong>Esempio:</strong> Se una squadra ha xG = 4.3 ma ha segnato solo 2 gol, significa che ha creato 
+            occasioni di alta qualità ma è stata sfortunata. È probabile che nelle prossime partite segni di più.
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+    
+    st.markdown("""
+    <div style="background: #f8fafc; padding: 25px; border-radius: 16px; margin: 20px 0;">
+        <h4 style="color: #1e293b; margin-bottom: 15px;">🛡️ Expected Goals Conceded (xGC)</h4>
+        <p style="color: #64748b; line-height: 1.8; margin-bottom: 10px;">
+            Misura la <strong>solidità difensiva</strong>. Indica quanti gol una squadra "dovrebbe" subire 
+            in base alle occasioni concesse agli avversari.
+        </p>
+        <div style="background: white; padding: 15px; border-radius: 8px; border-left: 4px solid #3b82f6;">
+            <strong>Esempio:</strong> xGC = 1.2 ma gol subiti = 3 significa che la difesa concede poche occasioni 
+            ma è sfortunata (o il portiere non è in forma). Possibile miglioramento futuro.
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+    
+    st.markdown("""
+    <div style="background: #f8fafc; padding: 25px; border-radius: 16px; margin: 20px 0;">
+        <h4 style="color: #1e293b; margin-bottom: 15px;">📊 Expected Points (xPTS)</h4>
+        <p style="color: #64748b; line-height: 1.8; margin-bottom: 10px;">
+            Punti che una squadra <strong>"dovrebbe" aver ottenuto</strong> in base alle performance effettive. 
+            Rivela squadre sovra o sottoperformanti rispetto al loro reale valore.
+        </p>
+        <div style="background: white; padding: 15px; border-radius: 8px; border-left: 4px solid #10b981;">
+            <strong>Esempio:</strong> xPTS = 12 ma punti reali = 6 indica una squadra molto sottovalutata 
+            che gioca meglio di quanto dice la classifica.
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+    
+    st.markdown("""
+    <div style="
+        height: 2px;
+        background: linear-gradient(90deg, transparent, #e2e8f0, transparent);
+        margin: 2rem 0;
+    "></div>
+    """, unsafe_allow_html=True)
+    
+    # Sezione 3: Fattori Contestuali
+    st.markdown("### 🔍 Analisi Contestuale")
+    
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        st.markdown("""
+        <div style="background: white; padding: 25px; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.08);">
+            <h4 style="color: #667eea; margin-bottom: 15px;">📰 Informazioni in Tempo Reale</h4>
+            <ul style="color: #64748b; line-height: 2;">
+                <li>Infortuni e squalifiche dei giocatori chiave</li>
+                <li>Dichiarazioni pre-partita degli allenatori</li>
+                <li>Rotazioni previste (es. Champions a metà settimana)</li>
+                <li>Condizioni meteo che possono influenzare il gioco</li>
+                <li>Motivazioni particolari (derby, salvezza, corsa al titolo)</li>
+            </ul>
+        </div>
+        """, unsafe_allow_html=True)
+    
+    with col2:
+        st.markdown("""
+        <div style="background: white; padding: 25px; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.08);">
+            <h4 style="color: #3b82f6; margin-bottom: 15px;">📊 Storico e Forma</h4>
+            <ul style="color: #64748b; line-height: 2;">
+                <li>Risultati delle ultime 5 partite</li>
+                <li>Performance casa/trasferta</li>
+                <li>Scontri diretti recenti</li>
+                <li>Trend di miglioramento o peggioramento</li>
+                <li>Difficoltà degli avversari affrontati</li>
+            </ul>
+        </div>
+        """, unsafe_allow_html=True)
+    
+    st.markdown("""
+    <div style="
+        height: 2px;
+        background: linear-gradient(90deg, transparent, #e2e8f0, transparent);
+        margin: 2rem 0;
+    "></div>
+    """, unsafe_allow_html=True)
+    
+    # Sezione 4: Livelli di Confidence
+    st.markdown("### 💪 Interpretazione dei Livelli di Confidence")
+    
+    col1, col2, col3 = st.columns(3)
+    
+    with col1:
+        st.markdown("""
+        <div style="
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            padding: 25px;
+            border-radius: 16px;
+            color: white;
+            text-align: center;
+            box-shadow: 0 6px 20px rgba(16, 185, 129, 0.3);
+        ">
+            <h3 style="margin: 0; font-size: 1.5rem;">🟢 Alta</h3>
+            <p style="margin-top: 15px; font-size: 0.95rem; line-height: 1.6;">
+                Forte convergenza di tutti gli indicatori. Divario netto tra le squadre 
+                nelle statistiche chiave e nessun fattore contestuale rilevante in contrasto.
+            </p>
+        </div>
+        """, unsafe_allow_html=True)
+    
+    with col2:
+        st.markdown("""
+        <div style="
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            padding: 25px;
+            border-radius: 16px;
+            color: white;
+            text-align: center;
+            box-shadow: 0 6px 20px rgba(245, 158, 11, 0.3);
+        ">
+            <h3 style="margin: 0; font-size: 1.5rem;">🟡 Media</h3>
+            <p style="margin-top: 15px; font-size: 0.95rem; line-height: 1.6;">
+                Situazione equilibrata o con segnali contrastanti. Le statistiche 
+                indicano una direzione ma alcuni fattori contestuali suggeriscono cautela.
+            </p>
+        </div>
+        """, unsafe_allow_html=True)
+    
+    with col3:
+        st.markdown("""
+        <div style="
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            padding: 25px;
+            border-radius: 16px;
+            color: white;
+            text-align: center;
+            box-shadow: 0 6px 20px rgba(239, 68, 68, 0.3);
+        ">
+            <h3 style="margin: 0; font-size: 1.5rem;">🔴 Bassa</h3>
+            <p style="margin-top: 15px; font-size: 0.95rem; line-height: 1.6;">
+                Partita molto incerta. Statistiche vicine, fattori imprevedibili 
+                o mancanza di informazioni chiave. Risultato difficile da prevedere.
+            </p>
+        </div>
+        """, unsafe_allow_html=True)
+    
+    st.markdown("""
+    <div style="
+        height: 2px;
+        background: linear-gradient(90deg, transparent, #e2e8f0, transparent);
+        margin: 2rem 0;
+    "></div>
+    """, unsafe_allow_html=True)
+    
+    # Sezione 5: Tecnologie
+    st.markdown("### ⚙️ Stack Tecnologico")
+    
+    st.markdown("""
+    <div style="background: white; padding: 30px; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.08);">
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px;">
+            <div style="text-align: center;">
+                <div style="font-size: 2.5rem; margin-bottom: 10px;">🔥</div>
+                <strong style="color: #1e293b;">Firecrawl API</strong>
+                <p style="color: #64748b; font-size: 0.85rem; margin-top: 5px;">Web scraping partite</p>
+            </div>
+            <div style="text-align: center;">
+                <div style="font-size: 2.5rem; margin-bottom: 10px;">🤖</div>
+                <strong style="color: #1e293b;">OpenAI GPT-4o-mini</strong>
+                <p style="color: #64748b; font-size: 0.85rem; margin-top: 5px;">Analisi AI avanzata</p>
+            </div>
+            <div style="text-align: center;">
+                <div style="font-size: 2.5rem; margin-bottom: 10px;">🔍</div>
+                <strong style="color: #1e293b;">Tavily Search</strong>
+                <p style="color: #64748b; font-size: 0.85rem; margin-top: 5px;">Info contestuali real-time</p>
+            </div>
+            <div style="text-align: center;">
+                <div style="font-size: 2.5rem; margin-bottom: 10px;">⚡</div>
+                <strong style="color: #1e293b;">n8n Workflow</strong>
+                <p style="color: #64748b; font-size: 0.85rem; margin-top: 5px;">Automazione pipeline</p>
+            </div>
+            <div style="text-align: center;">
+                <div style="font-size: 2.5rem; margin-bottom: 10px;">📊</div>
+                <strong style="color: #1e293b;">Streamlit</strong>
+                <p style="color: #64748b; font-size: 0.85rem; margin-top: 5px;">Dashboard interattiva</p>
+            </div>
+            <div style="text-align: center;">
+                <div style="font-size: 2.5rem; margin-bottom: 10px;">📋</div>
+                <strong style="color: #1e293b;">Google Sheets</strong>
+                <p style="color: #64748b; font-size: 0.85rem; margin-top: 5px;">Database predizioni</p>
+            </div>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+    
+    st.markdown("""
+    <div style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        padding: 2rem;
+        border-radius: 20px;
+        margin-top: 2rem;
+        color: white;
+        text-align: center;
+        box-shadow: 0 10px 40px rgba(102, 126, 234, 0.3);
+    ">
+        <h3 style="margin: 0; font-size: 1.3rem;">⚠️ Disclaimer</h3>
+        <p style="margin-top: 1rem; font-size: 0.95rem; line-height: 1.6; opacity: 0.95;">
+            Queste predizioni sono generate da un sistema AI a scopo informativo e di analisi. 
+            Non costituiscono in alcun modo un consiglio per scommesse o investimenti. 
+            Il calcio è uno sport imprevedibile e nessun sistema può garantire risultati accurati al 100%.
+        </p>
+    </div>
+    """, unsafe_allow_html=True)
+    
 # Footer
 st.markdown("""
 <div style="
@@ -1141,6 +1451,7 @@ st.markdown("""
     📱 Il sistema che genera le predizioni è stato sviluppato in n8n
 </div>
 """, unsafe_allow_html=True)
+
 
 
 

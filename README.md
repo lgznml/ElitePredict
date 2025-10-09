@@ -381,7 +381,7 @@ The workflow includes built-in **result verification**:
 - **Chain-of-Thought**: Requires step-by-step reasoning
 - **Tool Usage Enforcement**: Mandates all 3 tools per match
 
-### **💡 Main Features **
+### **💡 Main Features**
 
 1. **Multi-Source Validation**: Cross-references 3 different data sources per prediction
 2. **Expected Stats Priority**: Focuses on predictive metrics (xG, xPTS) over historical results

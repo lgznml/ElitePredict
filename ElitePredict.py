@@ -16,9 +16,41 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# Sostituisci la sezione "Configurazione PWA" (righe ~17-25) con questo:
+# Aggiungi questo SUBITO DOPO st.set_page_config() nel tuo ElitePredict.py
 
-# URL dell'icona - MODIFICA QUESTO con il path corretto del tuo repo
+import json
+
+# Crea il manifest dinamicamente
+manifest = {
+    "name": "Football Predictions Dashboard",
+    "short_name": "ElitePredict",
+    "description": "AI-Powered Match Analysis & Forecasting",
+    "start_url": "./",
+    "display": "standalone",
+    "background_color": "#667eea",
+    "theme_color": "#667eea",
+    "orientation": "portrait",
+    "icons": [
+        {
+            "src": "https://raw.githubusercontent.com/lgznml/FootballPredictions/main/FMP%20Solo%20Logo.png",
+            "sizes": "192x192",
+            "type": "image/png",
+            "purpose": "any"
+        },
+        {
+            "src": "https://raw.githubusercontent.com/lgznml/FootballPredictions/main/FMP%20Solo%20Logo.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "any"
+        }
+    ]
+}
+
+manifest_json = json.dumps(manifest)
+st.markdown(f"""
+<link rel="manifest" href="data:application/json;base64,{__import__('base64').b64encode(manifest_json.encode()).decode()}">
+""", unsafe_allow_html=True)
+
 ICON_URL = "https://raw.githubusercontent.com/lgznml/FootballPredictions/main/FMP%20Solo%20Logo.png"
 
 # Configurazione PWA completa per iOS
@@ -1345,6 +1377,7 @@ st.markdown("""
     📱 Il sistema che genera le predizioni è stato sviluppato in n8n
 </div>
 """, unsafe_allow_html=True)
+
 
 
 

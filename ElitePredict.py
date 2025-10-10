@@ -16,59 +16,56 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# Aggiungi questo SUBITO DOPO st.set_page_config() nel tuo ElitePredict.py
+from streamlit.components.v1 import html
 
-import json
+ICON_URL = "https://raw.githubusercontent.com/lgznml/FootballPredictions/main/FMP%20Solo%20Logo.png"
 
-# Crea il manifest dinamicamente
-manifest = {
-    "name": "Football Predictions Dashboard",
-    "short_name": "ElitePredict",
-    "description": "AI-Powered Match Analysis & Forecasting",
-    "start_url": "./",
-    "display": "standalone",
-    "background_color": "#667eea",
-    "theme_color": "#667eea",
-    "orientation": "portrait",
-    "icons": [
-        {
-            "src": "https://raw.githubusercontent.com/lgznml/FootballPredictions/main/FMP%20Solo%20Logo.png",
-            "sizes": "192x192",
-            "type": "image/png",
-            "purpose": "any"
-        },
-        {
-            "src": "https://raw.githubusercontent.com/lgznml/FootballPredictions/main/FMP%20Solo%20Logo.png",
-            "sizes": "512x512",
-            "type": "image/png",
-            "purpose": "any"
-        }
-    ]
-}
+html(f"""
+<script>
+(function() {{
+  // rimuovi eventuali duplicati
+  document.querySelectorAll('link[rel="apple-touch-icon"]').forEach(n => n.remove());
+  document.querySelectorAll('link[rel="manifest"]').forEach(n => n.remove());
+  document.querySelectorAll('link[rel="mask-icon"]').forEach(n => n.remove());
 
-manifest_json = json.dumps(manifest)
-st.markdown(f"""
-<link rel="manifest" href="data:application/json;base64,{__import__('base64').b64encode(manifest_json.encode()).decode()}">
-""", unsafe_allow_html=True)
+  function addLink(rel, href, sizes, type) {{
+    const l = document.createElement('link');
+    l.rel = rel;
+    l.href = href;
+    if (sizes) l.sizes = sizes;
+    if (type) l.type = type;
+    document.head.appendChild(l);
+  }}
 
-import time
-ICON_URL = f"https://raw.githubusercontent.com/lgznml/FootballPredictions/main/FMP%20Solo%20Logo.png?v={int(time.time())}"
+  addLink('apple-touch-icon', '{ICON_URL}', '180x180');
+  addLink('apple-touch-icon', '{ICON_URL}', '152x152');
+  addLink('apple-touch-icon', '{ICON_URL}', '120x120');
+  addLink('manifest', '/manifest.json'); // se hai un manifest servito a root
+  // mask icon per Safari (optional)
+  const mask = document.createElement('link');
+  mask.rel = 'mask-icon';
+  mask.href = '{ICON_URL}';
+  mask.setAttribute('color', '#667eea');
+  document.head.appendChild(mask);
 
-# Configurazione PWA completa per iOS
-st.markdown(f"""
-<link rel="manifest" href="/manifest.json">
-<meta name="theme-color" content="#667eea">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="ElitePredict">
-<link rel="apple-touch-icon" href="{ICON_URL}">
-<link rel="apple-touch-icon" sizes="180x180" href="{ICON_URL}">
-<link rel="apple-touch-icon" sizes="167x167" href="{ICON_URL}">
-<link rel="apple-touch-icon" sizes="152x152" href="{ICON_URL}">
-<link rel="apple-touch-icon" sizes="120x120" href="{ICON_URL}">
-<link rel="icon" type="image/png" sizes="32x32" href="{ICON_URL}">
-<link rel="icon" type="image/png" sizes="16x16" href="{ICON_URL}">
-""", unsafe_allow_html=True)
+  // meta per web-app iOS
+  const metas = [
+    ['apple-mobile-web-app-capable', 'yes'],
+    ['apple-mobile-web-app-status-bar-style', 'black-translucent'],
+    ['apple-mobile-web-app-title', 'ElitePredict']
+  ];
+  metas.forEach(([name, content]) => {{
+    let m = document.querySelector('meta[name="' + name + '"]');
+    if (m) m.remove();
+    m = document.createElement('meta');
+    m.name = name;
+    m.content = content;
+    document.head.appendChild(m);
+  }});
+}})();
+</script>
+""", height=0)
+
 
 # CSS per ottimizzazione mobile
 st.markdown("""

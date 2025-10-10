@@ -51,7 +51,8 @@ st.markdown(f"""
 <link rel="manifest" href="data:application/json;base64,{__import__('base64').b64encode(manifest_json.encode()).decode()}">
 """, unsafe_allow_html=True)
 
-ICON_URL = "https://raw.githubusercontent.com/lgznml/FootballPredictions/main/FMP%20Solo%20Logo.png"
+import time
+ICON_URL = f"https://raw.githubusercontent.com/lgznml/FootballPredictions/main/FMP%20Solo%20Logo.png?v={int(time.time())}"
 
 # Configurazione PWA completa per iOS
 st.markdown(f"""
@@ -1377,6 +1378,7 @@ st.markdown("""
     📱 Il sistema che genera le predizioni è stato sviluppato in n8n
 </div>
 """, unsafe_allow_html=True)
+
 
 
 

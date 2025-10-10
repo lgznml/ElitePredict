@@ -7,6 +7,25 @@ import requests
 from datetime import datetime, timedelta
 import json
 import time
+import io
+from PIL import Image
+
+RAW_ICON_URL = "https://raw.githubusercontent.com/lgznml/FootballPredictions/main/FMP_Solo_Logo.png"
+
+try:
+    r = requests.get(RAW_ICON_URL, timeout=10)
+    r.raise_for_status()
+    icon = Image.open(io.BytesIO(r.content)).convert("RGBA")
+    # ridimensiona (opzionale, ma utile per coerenza)
+    icon = icon.resize((256, 256), Image.LANCZOS)
+    # imposta l'icona della pagina
+    st.set_page_config(page_title="Predizioni Calcio", page_icon=icon, layout="wide")
+except Exception as e:
+    # fallback: emoji pallone se non riesce a scaricare l'immagine
+    st.set_page_config(page_title="Predizioni Calcio", page_icon="⚽", layout="wide")
+    st.warning(f"Impossibile caricare l'icona da GitHub: {e}")
+# -------------------------------------------------
+
 
 # Configurazione pagina per mobile
 st.set_page_config(
@@ -1324,6 +1343,7 @@ st.markdown("""
     📱 Il sistema che genera le predizioni è stato sviluppato in n8n
 </div>
 """, unsafe_allow_html=True)
+
 
 
 

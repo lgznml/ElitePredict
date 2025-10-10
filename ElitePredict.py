@@ -18,7 +18,7 @@ st.set_page_config(
 
 # Configurazione PWA
 st.markdown("""
-<link rel="manifest" href="/manifest.json">
+<link rel="manifest" href="https://github.com/lgznml/FootballPredictions/blob/main/manifest.json">
 <meta name="theme-color" content="#667eea">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -1334,6 +1334,7 @@ st.markdown("""
     📱 Il sistema che genera le predizioni è stato sviluppato in n8n
 </div>
 """, unsafe_allow_html=True)
+
 
 
 

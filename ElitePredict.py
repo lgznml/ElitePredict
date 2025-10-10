@@ -1,67 +1,112 @@
-import streamlit as st
-import pandas as pd
-import plotly.express as px
-import plotly.graph_objects as go
-from plotly.subplots import make_subplots
-import requests
-from datetime import datetime, timedelta
+from streamlit.components.v1 import html
 import json
+import base64
+import urllib.parse
 import time
 
-# Configurazione pagina per mobile
-st.set_page_config(
-    page_title="Predizioni Calcio",
-    page_icon="⚽",
-    layout="wide",
-    initial_sidebar_state="expanded"
-)
+# Costruisci un ICON_URL sicuro (escape degli spazi e caratteri)
+_raw_icon_path = "https://raw.githubusercontent.com/lgznml/FootballPredictions/main/FMP Solo Logo.png"
+ICON_URL = urllib.parse.quote(_raw_icon_path, safe=':/')
 
-from streamlit.components.v1 import html
+# Crea un manifest inline (data:application/json;base64,...) per evitare dipendenze esterne
+manifest = {
+    "name": "Football Predictions Dashboard",
+    "short_name": "ElitePredict",
+    "description": "AI-Powered Match Analysis & Forecasting",
+    "start_url": "./",
+    "display": "standalone",
+    "background_color": "#667eea",
+    "theme_color": "#667eea",
+    "orientation": "portrait",
+    "icons": [
+        {
+            "src": ICON_URL,
+            "sizes": "192x192",
+            "type": "image/png",
+            "purpose": "any"
+        },
+        {
+            "src": ICON_URL,
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "any"
+        },
+        {
+            "src": ICON_URL,
+            "sizes": "180x180",
+            "type": "image/png",
+            "purpose": "any"
+        }
+    ]
+}
+manifest_b64 = base64.b64encode(json.dumps(manifest).encode()).decode()
+MANIFEST_DATA_URI = f"data:application/json;base64,{manifest_b64}"
 
-ICON_URL = "https://raw.githubusercontent.com/lgznml/FootballPredictions/main/FMP%20Solo%20Logo.png"
-
+# Inietta i link/metatag nella head
+# Nota: l'iniezione via JS è la miglior opzione disponibile con Streamlit, ma iOS
+# può comunque leggere preferibilmente i tag presenti nell'HTML iniziale. Se continui a
+# riscontrare problemi, pubblica una index.html statica (vedi suggerimenti precedenti).
 html(f"""
 <script>
 (function() {{
-  // rimuovi eventuali duplicati
-  document.querySelectorAll('link[rel="apple-touch-icon"]').forEach(n => n.remove());
-  document.querySelectorAll('link[rel="manifest"]').forEach(n => n.remove());
-  document.querySelectorAll('link[rel="mask-icon"]').forEach(n => n.remove());
+  try {{
+    // rimuovi duplicati
+    document.querySelectorAll('link[rel="apple-touch-icon"], link[rel="icon"], link[rel="shortcut icon"], link[rel="manifest"], link[rel="mask-icon"]').forEach(n => n.remove());
+    document.querySelectorAll('meta[name="apple-mobile-web-app-capable"], meta[name="apple-mobile-web-app-status-bar-style"], meta[name="apple-mobile-web-app-title"], meta[name="theme-color"]').forEach(n => n.remove());
 
-  function addLink(rel, href, sizes, type) {{
-    const l = document.createElement('link');
-    l.rel = rel;
-    l.href = href;
-    if (sizes) l.sizes = sizes;
-    if (type) l.type = type;
-    document.head.appendChild(l);
+    function addLink(rel, href, sizes, type) {{
+      const l = document.createElement('link');
+      l.rel = rel;
+      l.href = href;
+      if (sizes) l.sizes = sizes;
+      if (type) l.type = type;
+      document.head.appendChild(l);
+    }}
+
+    // Icone multiple per compatibilità
+    addLink('apple-touch-icon', '{ICON_URL}', '180x180');
+    addLink('icon', '{ICON_URL}', '32x32', 'image/png');
+    addLink('icon', '{ICON_URL}', '192x192', 'image/png');
+    addLink('icon', '{ICON_URL}', '512x512', 'image/png');
+    addLink('shortcut icon', '{ICON_URL}', null, 'image/png');
+
+    // Manifest inline (data URI) per garantire che sia presente al primo caricamento
+    addLink('manifest', '{MANIFEST_DATA_URI}');
+
+    // mask icon per Safari
+    const mask = document.createElement('link');
+    mask.rel = 'mask-icon';
+    mask.href = '{ICON_URL}';
+    mask.setAttribute('color', '#667eea');
+    document.head.appendChild(mask);
+
+    // meta per iOS / PWA
+    const metas = [
+      ['apple-mobile-web-app-capable', 'yes'],
+      ['apple-mobile-web-app-status-bar-style', 'black-translucent'],
+      ['apple-mobile-web-app-title', 'ElitePredict'],
+      ['theme-color', '#667eea']
+    ];
+    metas.forEach(([name, content]) => {{
+      let m = document.createElement('meta');
+      m.name = name;
+      m.content = content;
+      document.head.appendChild(m);
+    }});
+
+    // Forza un piccolo "refresh" per le icone (solo se Safari le sta ancora leggendo dalla cache)
+    // Non sempre necessario; rimuovere in produzione se causa effetti collaterali.
+    setTimeout(function() {{
+      try {{
+        // crea un img invisibile per forzare il fetch dell'icona
+        var img = new Image();
+        img.src = '{ICON_URL}' + '?_ts=' + Date.now();
+      }} catch(e){{console.warn(e);}}
+    }}, 300);
+
+  }} catch (e) {{
+    console.warn("Errore in head-injection:", e);
   }}
-
-  addLink('apple-touch-icon', '{ICON_URL}', '180x180');
-  addLink('apple-touch-icon', '{ICON_URL}', '152x152');
-  addLink('apple-touch-icon', '{ICON_URL}', '120x120');
-  addLink('manifest', '/manifest.json'); // se hai un manifest servito a root
-  // mask icon per Safari (optional)
-  const mask = document.createElement('link');
-  mask.rel = 'mask-icon';
-  mask.href = '{ICON_URL}';
-  mask.setAttribute('color', '#667eea');
-  document.head.appendChild(mask);
-
-  // meta per web-app iOS
-  const metas = [
-    ['apple-mobile-web-app-capable', 'yes'],
-    ['apple-mobile-web-app-status-bar-style', 'black-translucent'],
-    ['apple-mobile-web-app-title', 'ElitePredict']
-  ];
-  metas.forEach(([name, content]) => {{
-    let m = document.querySelector('meta[name="' + name + '"]');
-    if (m) m.remove();
-    m = document.createElement('meta');
-    m.name = name;
-    m.content = content;
-    document.head.appendChild(m);
-  }});
 }})();
 </script>
 """, height=0)
@@ -1375,6 +1420,7 @@ st.markdown("""
     📱 Il sistema che genera le predizioni è stato sviluppato in n8n
 </div>
 """, unsafe_allow_html=True)
+
 
 
 

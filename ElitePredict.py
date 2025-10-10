@@ -16,14 +16,25 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# Configurazione PWA
-st.markdown("""
-<link rel="manifest" href="https://github.com/lgznml/FootballPredictions/blob/main/manifest.json">
+# Sostituisci la sezione "Configurazione PWA" (righe ~17-25) con questo:
+
+# URL dell'icona - MODIFICA QUESTO con il path corretto del tuo repo
+ICON_URL = "https://raw.githubusercontent.com/lgznml/FootballPredictions/main/FMP%20Solo%20Logo.png"
+
+# Configurazione PWA completa per iOS
+st.markdown(f"""
+<link rel="manifest" href="/manifest.json">
 <meta name="theme-color" content="#667eea">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="ElitePredict">
-<link rel="apple-touch-icon" href="https://raw.githubusercontent.com/lgznml/FootballPredictions/main/FMP%20Solo%20Logo.png">
+<link rel="apple-touch-icon" href="{ICON_URL}">
+<link rel="apple-touch-icon" sizes="180x180" href="{ICON_URL}">
+<link rel="apple-touch-icon" sizes="167x167" href="{ICON_URL}">
+<link rel="apple-touch-icon" sizes="152x152" href="{ICON_URL}">
+<link rel="apple-touch-icon" sizes="120x120" href="{ICON_URL}">
+<link rel="icon" type="image/png" sizes="32x32" href="{ICON_URL}">
+<link rel="icon" type="image/png" sizes="16x16" href="{ICON_URL}">
 """, unsafe_allow_html=True)
 
 # CSS per ottimizzazione mobile
@@ -1334,6 +1345,7 @@ st.markdown("""
     📱 Il sistema che genera le predizioni è stato sviluppato in n8n
 </div>
 """, unsafe_allow_html=True)
+
 
 
 

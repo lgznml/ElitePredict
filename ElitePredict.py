@@ -16,6 +16,16 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
+# Configurazione PWA
+st.markdown("""
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#667eea">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="ElitePredict">
+<link rel="apple-touch-icon" href="https://em-content.zobj.net/source/apple/391/soccer-ball_26bd.png">
+""", unsafe_allow_html=True)
+
 # CSS per ottimizzazione mobile
 st.markdown("""
 <style>
@@ -1324,6 +1334,7 @@ st.markdown("""
     📱 Il sistema che genera le predizioni è stato sviluppato in n8n
 </div>
 """, unsafe_allow_html=True)
+
 
 
 

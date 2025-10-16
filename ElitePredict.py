@@ -1184,7 +1184,7 @@ with tab4:
                 <div style="font-size: 2.5rem; margin-bottom: 10px;">📈</div>
                 <h3 style="color: #1e293b; font-size: 1.1rem; margin-bottom: 10px;">2. Statistiche Avanzate</h3>
                 <p style="color: #64748b; font-size: 0.9rem; line-height: 1.6;">
-                    Per ogni squadra vengono recuperate le statistiche dettagliate (xG, xGC, xPTS normalizzati) e gli ultimi risultati per valutare la forma recente
+                    Per ogni squadra vengono recuperate le statistiche dettagliate e gli ultimi risultati per valutare la forma recente
                 </p>
             </div>
             <div style="background: #f8fafc; padding: 20px; border-radius: 12px; border-left: 4px solid #f59e0b;">
@@ -1246,7 +1246,7 @@ with tab4:
             <div style="background: #f8fafc; padding: 18px; border-radius: 10px; border-left: 4px solid #667eea;">
                 <strong style="color: #667eea;">📊 Stats Retriever Tool</strong>
                 <p style="color: #64748b; font-size: 0.9rem; margin-top: 8px; line-height: 1.6;">
-                    Recupera statistiche dettagliate Champions League: xG, xGC, xPTS con metriche normalizzate, expected stats dettagliate (xGOT, xGFH, xGSH, xGOP, xGSP) e differenziali chiave
+                    Recupera statistiche dettagliate: xG, xGC, xPTS con metriche normalizzate, expected stats dettagliate (xGOT, xGFH, xGSH, xGOP, xGSP) e differenziali chiave
                 </p>
             </div>
             <div style="background: #f8fafc; padding: 18px; border-radius: 10px; border-left: 4px solid #3b82f6;">
@@ -1258,15 +1258,9 @@ with tab4:
             <div style="background: #f8fafc; padding: 18px; border-radius: 10px; border-left: 4px solid #f59e0b;">
                 <strong style="color: #f59e0b;">🔍 Tavily Tool</strong>
                 <p style="color: #64748b; font-size: 0.9rem; margin-top: 8px; line-height: 1.6;">
-                    Cerca info contestuali critiche: infortuni/squalifiche lista, dichiarazioni allenatori, rotazioni previste, condizioni meteo, motivazioni particolari, news pre-partita
+                    Cerca info contestuali critiche: infortuni/squalifiche, dichiarazioni allenatori, rotazioni previste, condizioni meteo, motivazioni particolari, news pre-partita
                 </p>
             </div>
-        </div>
-        <div style="background: #fff3cd; padding: 20px; border-radius: 10px; margin-top: 20px; border-left: 4px solid #ffc107;">
-            <strong style="color: #856404;">⚠️ Processo Obbligatorio</strong>
-            <p style="color: #856404; font-size: 0.9rem; margin-top: 8px; line-height: 1.6;">
-                L'AI DEVE sempre utilizzare tutti e 3 i tool in ordine (Stats → Matches → Tavily) per entrambe le squadre prima di ogni predizione. Nessuna predizione viene fatta senza aver consultato tutti i tool.
-            </p>
         </div>
     </div>
     
@@ -1275,7 +1269,7 @@ with tab4:
         <div style="background: #f8fafc; padding: 20px; border-radius: 12px; margin-bottom: 15px; border-left: 4px solid #667eea;">
             <h3 style="color: #667eea; margin-bottom: 10px; font-size: 1.1rem;">🎯 xG_norm (Expected Goals Normalizzati)</h3>
             <p style="color: #64748b; line-height: 1.7; margin-bottom: 8px;">
-                <strong>Metrica principale</strong> per valutare la qualità offensiva media: xG diviso partite giocate. Permette confronti diretti tra squadre con partite diverse, individuando il livello di qualità offensivo.
+                <strong>Metrica principale</strong> per valutare la qualità offensiva media, permette confronti diretti tra squadre con partite diverse, individuando il livello di qualità offensivo.
             </p>
             <p style="color: #475569; font-size: 0.85rem; background: white; padding: 10px; border-radius: 6px;">
                 <strong>Formula:</strong> xG_norm = xG totali / partite giocate
@@ -1284,7 +1278,7 @@ with tab4:
         <div style="background: #f8fafc; padding: 20px; border-radius: 12px; margin-bottom: 15px; border-left: 4px solid #3b82f6;">
             <h3 style="color: #3b82f6; margin-bottom: 10px; font-size: 1.1rem;">🛡️ xGC_norm (Expected Goals Conceded Normalizzati)</h3>
             <p style="color: #64748b; line-height: 1.7; margin-bottom: 8px;">
-                <strong>Metrica principale</strong> per valutare la solidità difensiva media: xGC diviso partite giocate. In questo modo si individua quale sia il livello di solidità difensiva della squadra.
+                <strong>Metrica principale</strong> per valutare quale sia il livello di solidità difensiva della squadra.
             </p>
             <p style="color: #475569; font-size: 0.85rem; background: white; padding: 10px; border-radius: 6px;">
                 <strong>Formula:</strong> xGC_norm = xGC totali / partite giocate
@@ -1416,6 +1410,7 @@ st.markdown("""
     📱 Il sistema che genera le predizioni è stato sviluppato in n8n
 </div>
 """, unsafe_allow_html=True)
+
 
 
 

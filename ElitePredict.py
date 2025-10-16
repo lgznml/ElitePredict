@@ -1354,7 +1354,7 @@ with tab4:
             <div style="text-align: center; padding: 15px;">
                 <div style="font-size: 2.5rem; margin-bottom: 10px;">📱</div>
                 <strong style="color: #1e293b;">GPT-4o-mini</strong>
-                <p style="color: #64748b; font-size: 0.8rem; margin-top: 5px;">AI Agent analisi</p>
+                <p style="color: #64748b; font-size: 0.8rem; margin-top: 5px;">Modello AI</p>
             </div>
             <div style="text-align: center; padding: 15px;">
                 <div style="font-size: 2.5rem; margin-bottom: 10px;">🔍</div>
@@ -1410,6 +1410,7 @@ st.markdown("""
     📱 Il sistema che genera le predizioni è stato sviluppato in n8n
 </div>
 """, unsafe_allow_html=True)
+
 
 
 

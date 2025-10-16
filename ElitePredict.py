@@ -1195,7 +1195,7 @@ with tab4:
                 </p>
             </div>
             <div style="background: #f8fafc; padding: 20px; border-radius: 12px; border-left: 4px solid #10b981;">
-                <div style="font-size: 2.5rem; margin-bottom: 10px;">🤖</div>
+                <div style="font-size: 2.5rem; margin-bottom: 10px;">📱</div>
                 <h3 style="color: #1e293b; font-size: 1.1rem; margin-bottom: 10px;">4. Analisi AI</h3>
                 <p style="color: #64748b; font-size: 0.9rem; line-height: 1.6;">
                     GPT-4o-mini analizza tutti i dati con metodologia strutturata e genera predizioni con percentuali di probabilità, livelli di confidence e insight chiave
@@ -1209,8 +1209,7 @@ with tab4:
         <div style="background: #f8fafc; padding: 20px; border-radius: 12px; margin-bottom: 15px; border-left: 4px solid #667eea;">
             <h3 style="color: #667eea; margin-bottom: 10px; font-size: 1.1rem;">📊 Step 1: Valutazione Forza Offensiva</h3>
             <p style="color: #64748b; line-height: 1.7; margin-bottom: 8px;">
-                L'AI confronta gli xG normalizzati (xG/partite giocate) delle due squadre. Un xG_norm >1.5 indica un attacco forte con alta probabilità di segnare. Analizza anche i differenziali per individuare squadre sfortunate con potenziale inespresso.
-            </p>
+                L’AI confronta i valori di xG normalizzati (ossia il rapporto tra xG e partite giocate) per valutare la forza offensiva delle squadre. Valori elevati indicano un attacco efficace e con alta probabilità di andare a segno. Inoltre, l’analisi dei differenziali tra xG attesi e gol effettivamente realizzati permette di individuare squadre che, pur creando molte occasioni, non hanno ancora espresso appieno il proprio potenziale realizzativo.            </p>
             <p style="color: #475569; font-size: 0.85rem; background: white; padding: 10px; border-radius: 6px;">
                 <strong>Esempio:</strong> Squadra con xG_norm=1.8 contro difesa avversaria con xGC_norm=1.4 → alto divario offensivo, favorita a segnare
             </p>
@@ -1218,8 +1217,7 @@ with tab4:
         <div style="background: #f8fafc; padding: 20px; border-radius: 12px; margin-bottom: 15px; border-left: 4px solid #3b82f6;">
             <h3 style="color: #3b82f6; margin-bottom: 10px; font-size: 1.1rem;">🛡️ Step 2: Valutazione Solidità Difensiva</h3>
             <p style="color: #64748b; line-height: 1.7; margin-bottom: 8px;">
-                Confronta gli xGC normalizzati (xGC/partite giocate). Un xGC_norm <0.8 indica una difesa solida. Verifica i differenziali per identificare difese fortunate che rischiano crolli futuri.
-            </p>
+                Il confronto degli xGC normalizzati (ossia rapportati al numero di partite giocate) permette di valutare l’effettiva solidità difensiva delle squadre. Valori particolarmente bassi indicano una difesa affidabile, ma l’analisi dei differenziali tra xGC attesi e gol subiti reali consente di individuare le squadre che stanno beneficiando di una certa fortuna difensiva e che, di conseguenza, potrebbero subire un peggioramento delle prestazioni nelle gare successive.            </p>
             <p style="color: #475569; font-size: 0.85rem; background: white; padding: 10px; border-radius: 6px;">
                 <strong>Esempio:</strong> Difesa con xGC_norm=0.7 contro attacco avversario con xG_norm=0.9 → difesa solida, difficile da battere
             </p>
@@ -1227,8 +1225,7 @@ with tab4:
         <div style="background: #f8fafc; padding: 20px; border-radius: 12px; margin-bottom: 15px; border-left: 4px solid #f59e0b;">
             <h3 style="color: #f59e0b; margin-bottom: 10px; font-size: 1.1rem;">📈 Step 3: Identificazione Trend</h3>
             <p style="color: #64748b; line-height: 1.7; margin-bottom: 8px;">
-                Analizza i differenziali xPTS (expected points vs punti reali). xPTS_diff positivo indica squadra sottovalutata in miglioramento, negativo indica squadra sopravvalutata con possibile calo prestazioni.
-            </p>
+                L’analisi dei differenziali tra punti attesi (xPTS) e punti reali consente di valutare la coerenza tra rendimento effettivo e prestazioni attese. Un differenziale positivo suggerisce che la squadra ha ottenuto meno punti di quanto meritasse e potrebbe essere in fase di crescita, mentre un differenziale negativo indica una squadra che ha raccolto più di quanto prodotto in campo e che potrebbe andare incontro a un calo di rendimento.            </p>
             <p style="color: #475569; font-size: 0.85rem; background: white; padding: 10px; border-radius: 6px;">
                 <strong>Esempio:</strong> xPTS_diff=+2.5 → squadra che gioca meglio di quanto dice la classifica, probabile miglioramento risultati
             </p>
@@ -1236,10 +1233,9 @@ with tab4:
         <div style="background: #f8fafc; padding: 20px; border-radius: 12px; border-left: 4px solid #10b981;">
             <h3 style="color: #10b981; margin-bottom: 10px; font-size: 1.1rem;">⚖️ Step 4: Gestione Pareggi Intelligente</h3>
             <p style="color: #64748b; line-height: 1.7; margin-bottom: 8px;">
-                L'AI non sottostima i pareggi. Aumenta significativamente la loro probabilità quando: differenza xG_norm <0.3, entrambe difese solide (xGC_norm <0.9), attacchi deboli (xG_norm <1.2) o storico H2H con >35% pareggi.
-            </p>
+                L’AI non tende a sottostimare i pareggi, ma ne incrementa sensibilmente la probabilità quando le squadre mostrano valori offensivi e difensivi simili, entrambe dispongono di difese solide, gli attacchi risultano poco incisivi oppure lo storico degli scontri diretti evidenzia una frequenza elevata di pareggi.            </p>
             <p style="color: #475569; font-size: 0.85rem; background: white; padding: 10px; border-radius: 6px;">
-                <strong>Esempio:</strong> xG_norm 1.3 vs 1.4 e xGC_norm 1.1 vs 1.0 → equilibrio statistico, pareggio altamente probabile (>40%)
+                <strong>Esempio:</strong> xG_norm 1.3 vs 1.4 e xGC_norm 1.1 vs 1.0 → equilibrio statistico, pareggio altamente probabile
             </p>
         </div>
     </div>
@@ -1269,7 +1265,7 @@ with tab4:
         <div style="background: #fff3cd; padding: 20px; border-radius: 10px; margin-top: 20px; border-left: 4px solid #ffc107;">
             <strong style="color: #856404;">⚠️ Processo Obbligatorio</strong>
             <p style="color: #856404; font-size: 0.9rem; margin-top: 8px; line-height: 1.6;">
-                L'AI DEVE sempre utilizzare tutti e 3 i tool in ordine (Stats → Matches → Tavily) per ENTRAMBE le squadre prima di ogni predizione. Nessuna predizione viene fatta senza aver consultato tutti i tool.
+                L'AI DEVE sempre utilizzare tutti e 3 i tool in ordine (Stats → Matches → Tavily) per entrambe le squadre prima di ogni predizione. Nessuna predizione viene fatta senza aver consultato tutti i tool.
             </p>
         </div>
     </div>
@@ -1279,7 +1275,7 @@ with tab4:
         <div style="background: #f8fafc; padding: 20px; border-radius: 12px; margin-bottom: 15px; border-left: 4px solid #667eea;">
             <h3 style="color: #667eea; margin-bottom: 10px; font-size: 1.1rem;">🎯 xG_norm (Expected Goals Normalizzati)</h3>
             <p style="color: #64748b; line-height: 1.7; margin-bottom: 8px;">
-                <strong>Metrica principale</strong> per valutare la qualità offensiva media: xG diviso partite giocate. Permette confronti diretti tra squadre con partite diverse. >1.5 = attacco molto forte, 1.0-1.5 = buono, <1.0 = debole.
+                <strong>Metrica principale</strong> per valutare la qualità offensiva media: xG diviso partite giocate. Permette confronti diretti tra squadre con partite diverse, individuando il livello di qualità offensivo.
             </p>
             <p style="color: #475569; font-size: 0.85rem; background: white; padding: 10px; border-radius: 6px;">
                 <strong>Formula:</strong> xG_norm = xG totali / partite giocate
@@ -1288,7 +1284,7 @@ with tab4:
         <div style="background: #f8fafc; padding: 20px; border-radius: 12px; margin-bottom: 15px; border-left: 4px solid #3b82f6;">
             <h3 style="color: #3b82f6; margin-bottom: 10px; font-size: 1.1rem;">🛡️ xGC_norm (Expected Goals Conceded Normalizzati)</h3>
             <p style="color: #64748b; line-height: 1.7; margin-bottom: 8px;">
-                <strong>Metrica principale</strong> per valutare la solidità difensiva media: xGC diviso partite giocate. <0.8 = difesa eccellente, 0.8-1.2 = buona, >1.2 = fragile.
+                <strong>Metrica principale</strong> per valutare la solidità difensiva media: xGC diviso partite giocate. In questo modo si individua quale sia il livello di solidità difensiva della squadra.
             </p>
             <p style="color: #475569; font-size: 0.85rem; background: white; padding: 10px; border-radius: 6px;">
                 <strong>Formula:</strong> xGC_norm = xGC totali / partite giocate
@@ -1319,19 +1315,19 @@ with tab4:
             <div style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); padding: 25px; border-radius: 12px; color: white; text-align: center;">
                 <h3 style="margin: 0; font-size: 1.3rem;">🟢 Alta</h3>
                 <p style="margin-top: 12px; font-size: 0.9rem; line-height: 1.6; opacity: 0.95;">
-                    Forte convergenza di tutti gli indicatori. Divario netto xG_norm/xGC_norm (>0.5), trend chiari nei differenziali, forma recente coerente, nessun fattore contestuale critico in contrasto.
+                    Forte convergenza di tutti gli indicatori. Divario netto xG_norm/xGC_norm, trend chiari nei differenziali, forma recente coerente, nessun fattore contestuale critico in contrasto.
                 </p>
             </div>
             <div style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); padding: 25px; border-radius: 12px; color: white; text-align: center;">
                 <h3 style="margin: 0; font-size: 1.3rem;">🟡 Media</h3>
                 <p style="margin-top: 12px; font-size: 0.9rem; line-height: 1.6; opacity: 0.95;">
-                    Equilibrio statistico (diff xG_norm 0.3-0.5) o segnali contrastanti. Le metriche normalizzate indicano una direzione ma fattori contestuali o forma recente suggeriscono cautela.
+                    Equilibrio statistico o segnali contrastanti. Le metriche normalizzate indicano una direzione ma fattori contestuali o forma recente suggeriscono cautela.
                 </p>
             </div>
             <div style="background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); padding: 25px; border-radius: 12px; color: white; text-align: center;">
                 <h3 style="margin: 0; font-size: 1.3rem;">🔴 Bassa</h3>
                 <p style="margin-top: 12px; font-size: 0.9rem; line-height: 1.6; opacity: 0.95;">
-                    Partita molto incerta. Statistiche vicinissime (diff <0.3), fattori imprevedibili critici (infortuni chiave, motivazioni opposte), mancanza informazioni decisive. Alto rischio pareggio.
+                    Partita molto incerta. Statistiche vicine, fattori imprevedibili critici (infortuni chiave, motivazioni opposte), mancanza informazioni decisive. Alto rischio pareggio.
                 </p>
             </div>
         </div>
@@ -1362,7 +1358,7 @@ with tab4:
                 <p style="color: #64748b; font-size: 0.8rem; margin-top: 5px;">Estrazione partite</p>
             </div>
             <div style="text-align: center; padding: 15px;">
-                <div style="font-size: 2.5rem; margin-bottom: 10px;">🤖</div>
+                <div style="font-size: 2.5rem; margin-bottom: 10px;">📱</div>
                 <strong style="color: #1e293b;">GPT-4o-mini</strong>
                 <p style="color: #64748b; font-size: 0.8rem; margin-top: 5px;">AI Agent analisi</p>
             </div>
@@ -1385,16 +1381,6 @@ with tab4:
                 <div style="font-size: 2.5rem; margin-bottom: 10px;">⚡</div>
                 <strong style="color: #1e293b;">n8n</strong>
                 <p style="color: #64748b; font-size: 0.8rem; margin-top: 5px;">Orchestrazione</p>
-            </div>
-            <div style="text-align: center; padding: 15px;">
-                <div style="font-size: 2.5rem; margin-bottom: 10px;">📱</div>
-                <strong style="color: #1e293b;">Streamlit</strong>
-                <p style="color: #64748b; font-size: 0.8rem; margin-top: 5px;">Dashboard web</p>
-            </div>
-            <div style="text-align: center; padding: 15px;">
-                <div style="font-size: 2.5rem; margin-bottom: 10px;">📋</div>
-                <strong style="color: #1e293b;">Google Sheets</strong>
-                <p style="color: #64748b; font-size: 0.8rem; margin-top: 5px;">Database</p>
             </div>
         </div>
     </div>
@@ -1430,6 +1416,7 @@ st.markdown("""
     📱 Il sistema che genera le predizioni è stato sviluppato in n8n
 </div>
 """, unsafe_allow_html=True)
+
 
 
 

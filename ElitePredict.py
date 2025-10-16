@@ -1166,7 +1166,7 @@ with tab4:
     ">
         <h1 style="margin: 0; font-size: 2.2rem; font-weight: 700;">🤖 Come Funzionano le Predizioni</h1>
         <p style="margin-top: 1rem; font-size: 1.1rem; opacity: 0.95;">
-            Sistema AI avanzato che combina analisi statistica e informazioni contestuali in tempo reale
+            Sistema AI avanzato che combina analisi statistica, forma recente e informazioni contestuali in tempo reale
         </p>
     </div>
     
@@ -1175,80 +1175,141 @@ with tab4:
         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-bottom: 20px;">
             <div style="background: #f8fafc; padding: 20px; border-radius: 12px; border-left: 4px solid #667eea;">
                 <div style="font-size: 2.5rem; margin-bottom: 10px;">📊</div>
-                <h3 style="color: #1e293b; font-size: 1.1rem; margin-bottom: 10px;">1. Raccolta Dati</h3>
+                <h3 style="color: #1e293b; font-size: 1.1rem; margin-bottom: 10px;">1. Raccolta Calendario</h3>
                 <p style="color: #64748b; font-size: 0.9rem; line-height: 1.6;">
-                    Estrazione automatica delle partite da Sky Sport per tutti i principali campionati europei (Serie A, Premier League, Bundesliga, Ligue 1, La Liga)
+                    Il sistema riceve numero giornata e campionato tramite form, quindi estrae automaticamente tutte le partite da Sky Sport per la giornata selezionata
                 </p>
             </div>
             <div style="background: #f8fafc; padding: 20px; border-radius: 12px; border-left: 4px solid #3b82f6;">
-                <div style="font-size: 2.5rem; margin-bottom: 10px;">🔍</div>
-                <h3 style="color: #1e293b; font-size: 1.1rem; margin-bottom: 10px;">2. Analisi Statistica</h3>
+                <div style="font-size: 2.5rem; margin-bottom: 10px;">📈</div>
+                <h3 style="color: #1e293b; font-size: 1.1rem; margin-bottom: 10px;">2. Statistiche Avanzate</h3>
                 <p style="color: #64748b; font-size: 0.9rem; line-height: 1.6;">
-                    Recupero statistiche avanzate (Expected Goals, Expected Points, forma recente) e informazioni contestuali (infortuni, squalifiche, motivazioni)
+                    Per ogni squadra vengono recuperate le statistiche dettagliate (xG, xGC, xPTS normalizzati) e gli ultimi risultati per valutare la forma recente
+                </p>
+            </div>
+            <div style="background: #f8fafc; padding: 20px; border-radius: 12px; border-left: 4px solid #f59e0b;">
+                <div style="font-size: 2.5rem; margin-bottom: 10px;">🔍</div>
+                <h3 style="color: #1e293b; font-size: 1.1rem; margin-bottom: 10px;">3. Info Contestuali</h3>
+                <p style="color: #64748b; font-size: 0.9rem; line-height: 1.6;">
+                    Tavily API cerca informazioni real-time su infortuni, squalifiche, dichiarazioni pre-partita, motivazioni e fattori psicologici delle squadre
                 </p>
             </div>
             <div style="background: #f8fafc; padding: 20px; border-radius: 12px; border-left: 4px solid #10b981;">
-                <div style="font-size: 2.5rem; margin-bottom: 10px;">📱</div>
-                <h3 style="color: #1e293b; font-size: 1.1rem; margin-bottom: 10px;">3. Predizione AI</h3>
+                <div style="font-size: 2.5rem; margin-bottom: 10px;">🤖</div>
+                <h3 style="color: #1e293b; font-size: 1.1rem; margin-bottom: 10px;">4. Analisi AI</h3>
                 <p style="color: #64748b; font-size: 0.9rem; line-height: 1.6;">
-                    GPT-4o-mini analizza tutti i dati raccolti e genera predizioni con percentuali di probabilità e livelli di confidence
+                    GPT-4o-mini analizza tutti i dati con metodologia strutturata e genera predizioni con percentuali di probabilità, livelli di confidence e insight chiave
                 </p>
             </div>
+        </div>
+    </div>
+    
+    <div style="background: white; padding: 30px; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); margin-bottom: 25px;">
+        <h2 style="color: #1e293b; margin-bottom: 20px; font-size: 1.5rem;">🎯 Metodologia di Predizione AI</h2>
+        <div style="background: #f8fafc; padding: 20px; border-radius: 12px; margin-bottom: 15px; border-left: 4px solid #667eea;">
+            <h3 style="color: #667eea; margin-bottom: 10px; font-size: 1.1rem;">📊 Step 1: Valutazione Forza Offensiva</h3>
+            <p style="color: #64748b; line-height: 1.7; margin-bottom: 8px;">
+                L'AI confronta gli xG normalizzati (xG/partite giocate) delle due squadre. Un xG_norm >1.5 indica un attacco forte con alta probabilità di segnare. Analizza anche i differenziali per individuare squadre sfortunate con potenziale inespresso.
+            </p>
+            <p style="color: #475569; font-size: 0.85rem; background: white; padding: 10px; border-radius: 6px;">
+                <strong>Esempio:</strong> Squadra con xG_norm=1.8 contro difesa avversaria con xGC_norm=1.4 → alto divario offensivo, favorita a segnare
+            </p>
+        </div>
+        <div style="background: #f8fafc; padding: 20px; border-radius: 12px; margin-bottom: 15px; border-left: 4px solid #3b82f6;">
+            <h3 style="color: #3b82f6; margin-bottom: 10px; font-size: 1.1rem;">🛡️ Step 2: Valutazione Solidità Difensiva</h3>
+            <p style="color: #64748b; line-height: 1.7; margin-bottom: 8px;">
+                Confronta gli xGC normalizzati (xGC/partite giocate). Un xGC_norm <0.8 indica una difesa solida. Verifica i differenziali per identificare difese fortunate che rischiano crolli futuri.
+            </p>
+            <p style="color: #475569; font-size: 0.85rem; background: white; padding: 10px; border-radius: 6px;">
+                <strong>Esempio:</strong> Difesa con xGC_norm=0.7 contro attacco avversario con xG_norm=0.9 → difesa solida, difficile da battere
+            </p>
+        </div>
+        <div style="background: #f8fafc; padding: 20px; border-radius: 12px; margin-bottom: 15px; border-left: 4px solid #f59e0b;">
+            <h3 style="color: #f59e0b; margin-bottom: 10px; font-size: 1.1rem;">📈 Step 3: Identificazione Trend</h3>
+            <p style="color: #64748b; line-height: 1.7; margin-bottom: 8px;">
+                Analizza i differenziali xPTS (expected points vs punti reali). xPTS_diff positivo indica squadra sottovalutata in miglioramento, negativo indica squadra sopravvalutata con possibile calo prestazioni.
+            </p>
+            <p style="color: #475569; font-size: 0.85rem; background: white; padding: 10px; border-radius: 6px;">
+                <strong>Esempio:</strong> xPTS_diff=+2.5 → squadra che gioca meglio di quanto dice la classifica, probabile miglioramento risultati
+            </p>
+        </div>
+        <div style="background: #f8fafc; padding: 20px; border-radius: 12px; border-left: 4px solid #10b981;">
+            <h3 style="color: #10b981; margin-bottom: 10px; font-size: 1.1rem;">⚖️ Step 4: Gestione Pareggi Intelligente</h3>
+            <p style="color: #64748b; line-height: 1.7; margin-bottom: 8px;">
+                L'AI non sottostima i pareggi. Aumenta significativamente la loro probabilità quando: differenza xG_norm <0.3, entrambe difese solide (xGC_norm <0.9), attacchi deboli (xG_norm <1.2) o storico H2H con >35% pareggi.
+            </p>
+            <p style="color: #475569; font-size: 0.85rem; background: white; padding: 10px; border-radius: 6px;">
+                <strong>Esempio:</strong> xG_norm 1.3 vs 1.4 e xGC_norm 1.1 vs 1.0 → equilibrio statistico, pareggio altamente probabile (>40%)
+            </p>
+        </div>
+    </div>
+    
+    <div style="background: white; padding: 30px; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); margin-bottom: 25px;">
+        <h2 style="color: #1e293b; margin-bottom: 20px; font-size: 1.5rem;">🔧 Strumenti AI Utilizzati</h2>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 15px;">
+            <div style="background: #f8fafc; padding: 18px; border-radius: 10px; border-left: 4px solid #667eea;">
+                <strong style="color: #667eea;">📊 Stats Retriever Tool</strong>
+                <p style="color: #64748b; font-size: 0.9rem; margin-top: 8px; line-height: 1.6;">
+                    Recupera statistiche dettagliate Champions League: xG, xGC, xPTS con metriche normalizzate, expected stats dettagliate (xGOT, xGFH, xGSH, xGOP, xGSP) e differenziali chiave
+                </p>
+            </div>
+            <div style="background: #f8fafc; padding: 18px; border-radius: 10px; border-left: 4px solid #3b82f6;">
+                <strong style="color: #3b82f6;">🎯 Matches Tool</strong>
+                <p style="color: #64748b; font-size: 0.9rem; margin-top: 8px; line-height: 1.6;">
+                    Recupera storico recente delle partite per valutare forma (ultime 3-5 partite), difficoltà avversari recenti, pattern di performance e gestione energie/rotazioni
+                </p>
+            </div>
+            <div style="background: #f8fafc; padding: 18px; border-radius: 10px; border-left: 4px solid #f59e0b;">
+                <strong style="color: #f59e0b;">🔍 Tavily Tool</strong>
+                <p style="color: #64748b; font-size: 0.9rem; margin-top: 8px; line-height: 1.6;">
+                    Cerca info contestuali critiche: infortuni/squalifiche lista, dichiarazioni allenatori, rotazioni previste, condizioni meteo, motivazioni particolari, news pre-partita
+                </p>
+            </div>
+        </div>
+        <div style="background: #fff3cd; padding: 20px; border-radius: 10px; margin-top: 20px; border-left: 4px solid #ffc107;">
+            <strong style="color: #856404;">⚠️ Processo Obbligatorio</strong>
+            <p style="color: #856404; font-size: 0.9rem; margin-top: 8px; line-height: 1.6;">
+                L'AI DEVE sempre utilizzare tutti e 3 i tool in ordine (Stats → Matches → Tavily) per ENTRAMBE le squadre prima di ogni predizione. Nessuna predizione viene fatta senza aver consultato tutti i tool.
+            </p>
         </div>
     </div>
     
     <div style="background: white; padding: 30px; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); margin-bottom: 25px;">
         <h2 style="color: #1e293b; margin-bottom: 20px; font-size: 1.5rem;">📈 Statistiche Chiave Analizzate</h2>
         <div style="background: #f8fafc; padding: 20px; border-radius: 12px; margin-bottom: 15px; border-left: 4px solid #667eea;">
-            <h3 style="color: #667eea; margin-bottom: 10px; font-size: 1.1rem;">🎯 Expected Goals (xG)</h3>
+            <h3 style="color: #667eea; margin-bottom: 10px; font-size: 1.1rem;">🎯 xG_norm (Expected Goals Normalizzati)</h3>
             <p style="color: #64748b; line-height: 1.7; margin-bottom: 8px;">
-                Misura la qualità delle occasioni create. Un xG alto con pochi gol segnati indica sfortuna in fase realizzativa e probabile miglioramento futuro.
+                <strong>Metrica principale</strong> per valutare la qualità offensiva media: xG diviso partite giocate. Permette confronti diretti tra squadre con partite diverse. >1.5 = attacco molto forte, 1.0-1.5 = buono, <1.0 = debole.
             </p>
             <p style="color: #475569; font-size: 0.85rem; background: white; padding: 10px; border-radius: 6px;">
-                <strong>Esempio:</strong> xG = 4.3 ma solo 2 gol segnati → la squadra crea ottime occasioni ma è sfortunata, probabile che segni di più nelle prossime partite
+                <strong>Formula:</strong> xG_norm = xG totali / partite giocate
             </p>
         </div>
         <div style="background: #f8fafc; padding: 20px; border-radius: 12px; margin-bottom: 15px; border-left: 4px solid #3b82f6;">
-            <h3 style="color: #3b82f6; margin-bottom: 10px; font-size: 1.1rem;">🛡️ Expected Goals Conceded (xGC)</h3>
+            <h3 style="color: #3b82f6; margin-bottom: 10px; font-size: 1.1rem;">🛡️ xGC_norm (Expected Goals Conceded Normalizzati)</h3>
             <p style="color: #64748b; line-height: 1.7; margin-bottom: 8px;">
-                Misura la solidità difensiva. Indica quanti gol una squadra "dovrebbe" subire in base alle occasioni concesse agli avversari.
+                <strong>Metrica principale</strong> per valutare la solidità difensiva media: xGC diviso partite giocate. <0.8 = difesa eccellente, 0.8-1.2 = buona, >1.2 = fragile.
             </p>
             <p style="color: #475569; font-size: 0.85rem; background: white; padding: 10px; border-radius: 6px;">
-                <strong>Esempio:</strong> xGC = 1.2 ma 3 gol subiti → la difesa concede poche occasioni ma è sfortunata, possibile miglioramento
+                <strong>Formula:</strong> xGC_norm = xGC totali / partite giocate
             </p>
         </div>
-        <div style="background: #f8fafc; padding: 20px; border-radius: 12px; border-left: 4px solid #10b981;">
-            <h3 style="color: #10b981; margin-bottom: 10px; font-size: 1.1rem;">📊 Expected Points (xPTS)</h3>
+        <div style="background: #f8fafc; padding: 20px; border-radius: 12px; margin-bottom: 15px; border-left: 4px solid #10b981;">
+            <h3 style="color: #10b981; margin-bottom: 10px; font-size: 1.1rem;">📊 Expected Stats Differenziali</h3>
             <p style="color: #64748b; line-height: 1.7; margin-bottom: 8px;">
-                Punti che una squadra "dovrebbe" aver ottenuto in base alle performance effettive. Rivela squadre sovra o sottoperformanti.
-            </p>
-            <p style="color: #475569; font-size: 0.85rem; background: white; padding: 10px; border-radius: 6px;">
-                <strong>Esempio:</strong> xPTS = 12 ma solo 6 punti reali → squadra sottovalutata che gioca meglio di quanto dice la classifica
+                <strong>xG_diff</strong> (xG - gol reali): negativo = sfortunata in attacco, miglioramento probabile<br>
+                <strong>xGC_diff</strong> (xGC - gol subiti): positivo = difesa fortunata, rischio crollo<br>
+                <strong>xPTS_diff</strong> (xPTS - punti reali): positivo = sottovalutata, negativo = sopravvalutata
             </p>
         </div>
-    </div>
-    
-    <div style="background: white; padding: 30px; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); margin-bottom: 25px;">
-        <h2 style="color: #1e293b; margin-bottom: 20px; font-size: 1.5rem;">🔍 Fattori Contestuali Analizzati</h2>
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 15px;">
-            <div style="background: #f8fafc; padding: 18px; border-radius: 10px;">
-                <strong style="color: #667eea;">📰 Informazioni Real-Time</strong>
-                <p style="color: #64748b; font-size: 0.9rem; margin-top: 8px; line-height: 1.6;">
-                    Infortuni/squalifiche giocatori chiave, dichiarazioni pre-partita allenatori, rotazioni previste per impegni ravvicinati
-                </p>
-            </div>
-            <div style="background: #f8fafc; padding: 18px; border-radius: 10px;">
-                <strong style="color: #3b82f6;">📊 Forma e Storico</strong>
-                <p style="color: #64748b; font-size: 0.9rem; margin-top: 8px; line-height: 1.6;">
-                    Risultati ultime 5 partite, performance casa/trasferta, scontri diretti recenti, trend miglioramento/peggioramento
-                </p>
-            </div>
-            <div style="background: #f8fafc; padding: 18px; border-radius: 10px;">
-                <strong style="color: #10b981;">🎯 Fattori Psicologici</strong>
-                <p style="color: #64748b; font-size: 0.9rem; margin-top: 8px; line-height: 1.6;">
-                    Motivazioni particolari (derby, salvezza, corsa al titolo), pressione, rivalità storiche, gestione energie
-                </p>
-            </div>
+        <div style="background: #f8fafc; padding: 20px; border-radius: 12px; border-left: 4px solid #f59e0b;">
+            <h3 style="color: #f59e0b; margin-bottom: 10px; font-size: 1.1rem;">🔍 Expected Stats Dettagliate</h3>
+            <p style="color: #64748b; line-height: 1.7;">
+                <strong>xGOT</strong> (Expected Goals On Target): qualità dei tiri in porta<br>
+                <strong>xGFH/xGSH</strong> (First/Second Half): distribuzione prestazioni nei tempi<br>
+                <strong>xGOP</strong> (Open Play): qualità del gioco manovrato<br>
+                <strong>xGSP</strong> (Set Pieces): pericolosità su palle ferme
+            </p>
         </div>
     </div>
     
@@ -1258,21 +1319,37 @@ with tab4:
             <div style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); padding: 25px; border-radius: 12px; color: white; text-align: center;">
                 <h3 style="margin: 0; font-size: 1.3rem;">🟢 Alta</h3>
                 <p style="margin-top: 12px; font-size: 0.9rem; line-height: 1.6; opacity: 0.95;">
-                    Forte convergenza di tutti gli indicatori statistici. Divario netto tra le squadre e nessun fattore contestuale rilevante in contrasto.
+                    Forte convergenza di tutti gli indicatori. Divario netto xG_norm/xGC_norm (>0.5), trend chiari nei differenziali, forma recente coerente, nessun fattore contestuale critico in contrasto.
                 </p>
             </div>
             <div style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); padding: 25px; border-radius: 12px; color: white; text-align: center;">
                 <h3 style="margin: 0; font-size: 1.3rem;">🟡 Media</h3>
                 <p style="margin-top: 12px; font-size: 0.9rem; line-height: 1.6; opacity: 0.95;">
-                    Situazione equilibrata o con segnali contrastanti. Le statistiche indicano una direzione ma alcuni fattori suggeriscono cautela.
+                    Equilibrio statistico (diff xG_norm 0.3-0.5) o segnali contrastanti. Le metriche normalizzate indicano una direzione ma fattori contestuali o forma recente suggeriscono cautela.
                 </p>
             </div>
             <div style="background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); padding: 25px; border-radius: 12px; color: white; text-align: center;">
                 <h3 style="margin: 0; font-size: 1.3rem;">🔴 Bassa</h3>
                 <p style="margin-top: 12px; font-size: 0.9rem; line-height: 1.6; opacity: 0.95;">
-                    Partita molto incerta. Statistiche vicine, fattori imprevedibili o mancanza di informazioni chiave. Risultato difficile da prevedere.
+                    Partita molto incerta. Statistiche vicinissime (diff <0.3), fattori imprevedibili critici (infortuni chiave, motivazioni opposte), mancanza informazioni decisive. Alto rischio pareggio.
                 </p>
             </div>
+        </div>
+    </div>
+    
+    <div style="background: white; padding: 30px; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); margin-bottom: 25px;">
+        <h2 style="color: #1e293b; margin-bottom: 20px; font-size: 1.5rem;">📋 Output della Predizione</h2>
+        <div style="background: #f8fafc; padding: 20px; border-radius: 12px; border-left: 4px solid #667eea;">
+            <p style="color: #64748b; line-height: 1.7; margin-bottom: 12px;">
+                Per ogni partita l'AI fornisce un'analisi strutturata completa:
+            </p>
+            <ul style="color: #64748b; line-height: 2; margin-left: 20px;">
+                <li><strong>📊 Analisi Statistica:</strong> Confronto xG_norm, xGC_norm e differenziali chiave</li>
+                <li><strong>📈 Forma Recente:</strong> Sintesi ultimi risultati e trend per entrambe le squadre</li>
+                <li><strong>🔍 Fattori Contestuali:</strong> Infortuni/squalifiche, motivazioni, altri fattori rilevanti</li>
+                <li><strong>⚽ Predizione Finale:</strong> Confidence level + probabilità dettagliate (1/X/2)</li>
+                <li><strong>💡 Insight Chiave:</strong> 1-2 frasi sul fattore decisivo basato su dati xG_norm e contesto</li>
+            </ul>
         </div>
     </div>
     
@@ -1281,28 +1358,38 @@ with tab4:
         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 20px;">
             <div style="text-align: center; padding: 15px;">
                 <div style="font-size: 2.5rem; margin-bottom: 10px;">🔥</div>
-                <strong style="color: #1e293b;">Firecrawl</strong>
-                <p style="color: #64748b; font-size: 0.8rem; margin-top: 5px;">Scraping partite</p>
+                <strong style="color: #1e293b;">Firecrawl API</strong>
+                <p style="color: #64748b; font-size: 0.8rem; margin-top: 5px;">Estrazione partite</p>
             </div>
             <div style="text-align: center; padding: 15px;">
-                <div style="font-size: 2.5rem; margin-bottom: 10px;">📱</div>
+                <div style="font-size: 2.5rem; margin-bottom: 10px;">🤖</div>
                 <strong style="color: #1e293b;">GPT-4o-mini</strong>
-                <p style="color: #64748b; font-size: 0.8rem; margin-top: 5px;">Analisi AI</p>
+                <p style="color: #64748b; font-size: 0.8rem; margin-top: 5px;">AI Agent analisi</p>
             </div>
             <div style="text-align: center; padding: 15px;">
                 <div style="font-size: 2.5rem; margin-bottom: 10px;">🔍</div>
-                <strong style="color: #1e293b;">Tavily</strong>
+                <strong style="color: #1e293b;">Tavily API</strong>
                 <p style="color: #64748b; font-size: 0.8rem; margin-top: 5px;">Info real-time</p>
+            </div>
+            <div style="text-align: center; padding: 15px;">
+                <div style="font-size: 2.5rem; margin-bottom: 10px;">📊</div>
+                <strong style="color: #1e293b;">Stats Retriever</strong>
+                <p style="color: #64748b; font-size: 0.8rem; margin-top: 5px;">Workflow n8n</p>
+            </div>
+            <div style="text-align: center; padding: 15px;">
+                <div style="font-size: 2.5rem; margin-bottom: 10px;">🎯</div>
+                <strong style="color: #1e293b;">Matches Tool</strong>
+                <p style="color: #64748b; font-size: 0.8rem; margin-top: 5px;">Workflow n8n</p>
             </div>
             <div style="text-align: center; padding: 15px;">
                 <div style="font-size: 2.5rem; margin-bottom: 10px;">⚡</div>
                 <strong style="color: #1e293b;">n8n</strong>
-                <p style="color: #64748b; font-size: 0.8rem; margin-top: 5px;">Automazione</p>
+                <p style="color: #64748b; font-size: 0.8rem; margin-top: 5px;">Orchestrazione</p>
             </div>
             <div style="text-align: center; padding: 15px;">
-                <div style="font-size: 2.5rem; margin-bottom: 10px;">📊</div>
+                <div style="font-size: 2.5rem; margin-bottom: 10px;">📱</div>
                 <strong style="color: #1e293b;">Streamlit</strong>
-                <p style="color: #64748b; font-size: 0.8rem; margin-top: 5px;">Dashboard</p>
+                <p style="color: #64748b; font-size: 0.8rem; margin-top: 5px;">Dashboard web</p>
             </div>
             <div style="text-align: center; padding: 15px;">
                 <div style="font-size: 2.5rem; margin-bottom: 10px;">📋</div>
@@ -1343,6 +1430,7 @@ st.markdown("""
     📱 Il sistema che genera le predizioni è stato sviluppato in n8n
 </div>
 """, unsafe_allow_html=True)
+
 
 
 

@@ -1141,6 +1141,48 @@ with tab3:
                     st.markdown("**📊 Confidence:**")
                     st.markdown(f"**{match['Confidence']}**")
                 
+                # Nuova sezione: Probabilità dettagliate
+                st.markdown("---")
+                st.markdown("**📈 Probabilità Dettagliate:**")
+                
+                prob_col1, prob_col2, prob_col3 = st.columns(3)
+                
+                with prob_col1:
+                    prob_casa = match.get('Probabilità Vittoria Casa', 'N/D')
+                    if prob_casa != 'N/D' and pd.notna(prob_casa):
+                        st.markdown(f"""
+                        <div style="text-align: center; padding: 15px; background: #f0f9ff; border-radius: 10px; border: 2px solid #3b82f6;">
+                            <div style="font-size: 0.85rem; color: #64748b; margin-bottom: 5px;">🏠 Vittoria Casa</div>
+                            <div style="font-size: 1.8rem; font-weight: 700; color: #3b82f6;">{prob_casa}%</div>
+                        </div>
+                        """, unsafe_allow_html=True)
+                    else:
+                        st.markdown("🏠 **Vittoria Casa:** N/D")
+                
+                with prob_col2:
+                    prob_pareggio = match.get('Probabilità Pareggio', 'N/D')
+                    if prob_pareggio != 'N/D' and pd.notna(prob_pareggio):
+                        st.markdown(f"""
+                        <div style="text-align: center; padding: 15px; background: #fffbeb; border-radius: 10px; border: 2px solid #f59e0b;">
+                            <div style="font-size: 0.85rem; color: #64748b; margin-bottom: 5px;">🤝 Pareggio</div>
+                            <div style="font-size: 1.8rem; font-weight: 700; color: #f59e0b;">{prob_pareggio}%</div>
+                        </div>
+                        """, unsafe_allow_html=True)
+                    else:
+                        st.markdown("🤝 **Pareggio:** N/D")
+                
+                with prob_col3:
+                    prob_ospite = match.get('Probabilità Vittoria Ospite', 'N/D')
+                    if prob_ospite != 'N/D' and pd.notna(prob_ospite):
+                        st.markdown(f"""
+                        <div style="text-align: center; padding: 15px; background: #f0fdf4; border-radius: 10px; border: 2px solid #10b981;">
+                            <div style="font-size: 0.85rem; color: #64748b; margin-bottom: 5px;">✈️ Vittoria Ospite</div>
+                            <div style="font-size: 1.8rem; font-weight: 700; color: #10b981;">{prob_ospite}%</div>
+                        </div>
+                        """, unsafe_allow_html=True)
+                    else:
+                        st.markdown("✈️ **Vittoria Ospite:** N/D")
+                
                 # Spazio tra le partite
                 st.markdown("""
                 <div style="
@@ -1152,7 +1194,7 @@ with tab3:
                     
     else:
         st.info("🎮 Nessuna partita in programma al momento. Le prossime predizioni appariranno qui.")
-
+        
 with tab4:
     st.markdown("""
     <div style="
@@ -1410,6 +1452,7 @@ st.markdown("""
     📱 Il sistema che genera le predizioni è stato sviluppato in n8n
 </div>
 """, unsafe_allow_html=True)
+
 
 
 
